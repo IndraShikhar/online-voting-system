@@ -1,78 +1,18 @@
 import express from "express"
-
+import userController from "../controllers/userController.js"
 const router = express.Router();
 
-router.post('/register', (req, res) => {
-    // Register a new user (voter/admin)
+router.post('/register', userController.registerUser);
 
-    res.status(200)
-        .json({
-            status: "Success",
-            data: {
-                message: `You accessed ${req.originalUrl}`
-            }
-        })
-})
+router.post('/login', userController.loginUser);
 
-router.post('/login', (req, res) => {
-    // Login and get JWT token
+router.get('/profile', userController.getUserProfile);
 
-    res.status(200)
-        .json({
-            status: "Success",
-            data: {
-                message: `You accessed ${req.originalUrl}`
-            }
-        })
-})
+router.put('/profile', userController.updateUserProfile);
 
-router.get('/profile', (req, res) => {
-    // Get logged-in user's details 
+router.get('/all', userController.getAllUsers);
 
-    res.status(200)
-        .json({
-            status: "Success",
-            data: {
-                message: `You accessed ${req.originalUrl}`
-            }
-        })
-})
-
-router.put('/profile', (req, res) => {
-    // Update user's info (optional)
-
-    res.status(200)
-        .json({
-            status: "Success",
-            data: {
-                message: `You accessed ${req.originalUrl}`
-            }
-        })
-})
-
-router.get('/all', (req, res) => {
-    // Get list of all users (admin only)
-
-    res.status(200)
-        .json({
-            status: "Success",
-            data: {
-                message: `You accessed ${req.originalUrl}`
-            }
-        })
-})
-
-router.patch('/block/:userId', (req, res) => {
-    // Block or deactivate a user (admin only)
-
-    res.status(200)
-        .json({
-            status: "Success",
-            data: {
-                message: `You accessed ${req.originalUrl}`
-            }
-        })
-})
+router.patch('/block/:userId', userController.blockUser);
 
 
 

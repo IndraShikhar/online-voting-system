@@ -1,90 +1,20 @@
 import express from "express"
-
+import electionController from "../controllers/electionController.js"
 const router = express.Router();
 
-router.post('/create', (req, res) => {
-    // Create a new election (admin only)
+router.post('/create', electionController.createNewElection)
 
-    res.status(200)
-        .json({
-            status: "Success",
-            data: {
-                message: `You accessed ${req.originalUrl}`
-            }
-        })
-})
+router.get('/', electionController.getAllElections)
 
-router.get('/', (req, res) => {
-    // Get all elections
+router.get('/:id', electionController.getDetailOfElection)
 
-    res.status(200)
-        .json({
-            status: "Success",
-            data: {
-                message: `You accessed ${req.originalUrl}`
-            }
-        })
-})
+router.patch('/start/:id', electionController.startElection)
 
-router.get('/:id', (req, res) => {
-    // Get details of one election
+router.patch('/end/:id', electionController.endElection)
 
-    res.status(200)
-        .json({
-            status: "Success",
-            data: {
-                message: `You accessed ${req.originalUrl}`
-            }
-        })
-})
+router.patch('/declare-result/:id', electionController.declareResults)
 
-router.patch('/start/:id', (req, res) => {
-    // Start an election (admin only)
-
-    res.status(200)
-        .json({
-            status: "Success",
-            data: {
-                message: `You accessed ${req.originalUrl}`
-            }
-        })
-})
-
-router.patch('/end/:id', (req, res) => {
-    // End an election (admin only)
-
-    res.status(200)
-        .json({
-            status: "Success",
-            data: {
-                message: `You accessed ${req.originalUrl}`
-            }
-        })
-})
-
-router.patch('/declare-result/:id', (req, res) => {
-    // Declare results (admin only) 
-
-    res.status(200)
-        .json({
-            status: "Success",
-            data: {
-                message: `You accessed ${req.originalUrl}`
-            }
-        })
-})
-
-router.delete('/delete/:id', (req, res) => {
-    // Delete an election (admin only) 
-
-    res.status(200)
-        .json({
-            status: "Success",
-            data: {
-                message: `You accessed ${req.originalUrl}`
-            }
-        })
-})
+router.delete('/delete/:id', electionController.deleteElection)
 
 
 export default router;

@@ -1,78 +1,18 @@
 import express from "express"
+import candidateController from "../controllers/candidateController.js"
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
-    // Get list of all candidates 
+router.get('/', candidateController.listAllCandidates);
 
-    res.status(200)
-        .json({
-            status: "Success",
-            data: {
-                message: `You accessed ${req.originalUrl}`
-            }
-        })
-})
-router.get('/:id', (req, res) => {
-    // Get details of a candidate
+router.get('/:id', candidateController.getDetailOfCandidate)
 
-    res.status(200)
-        .json({
-            status: "Success",
-            data: {
-                message: `You accessed ${req.originalUrl}`
-            }
-        })
-})
+router.get('/by-election/:electionId', candidateController.getAllCandidates)
 
-router.get('/by-election/:electionId', (req, res) => {
+router.post('/add', candidateController.addNewCandidate)
 
-    // Get all candidates for a specific election
+router.put('/api/update/:id', candidateController.updateCandidate)
 
-    res.status(200)
-        .json({
-            status: "Success",
-            data: {
-                message: `You accessed ${req.originalUrl}`
-            }
-        })
-})
-
-router.post('/add', (req, res) => {
-    // Add a new candidate (admin only) 
-
-    console.log(req);
-    res.status(200)
-        .json({
-            status: "Success",
-            data: {
-                message: `You accessed ${req.originalUrl}`
-            }
-        })
-})
-
-router.put('/api/update/:id', (req, res) => {
-    // Update candidate details (admin only)
-
-    res.status(200)
-        .json({
-            status: "Success",
-            data: {
-                message: `You accessed ${req.originalUrl}`
-            }
-        })
-})
-
-router.delete('/api/delete/:id', (req, res) => {
-    // Delete candidate (admin only) 
-
-    res.status(200)
-        .json({
-            status: "Success",
-            data: {
-                message: `You accessed ${req.originalUrl}`
-            }
-        })
-})
+router.delete('/api/delete/:id', candidateController.deleteCandidate)
 
 export default router;
