@@ -1,18 +1,18 @@
 import express from "express"
 import candidateController from "../controllers/candidateController.js"
 
-const router = express.Router();
+const candidateRouter = express.Router();
 
-router.get('/', candidateController.listAllCandidates);
+candidateRouter.get('/', candidateController.listAllCandidates);
 
-router.get('/:id', candidateController.getDetailOfCandidate)
+candidateRouter.get('/:id', candidateController.getDetailOfCandidate)
 
-router.get('/by-election/:electionId', candidateController.getAllCandidates)
+candidateRouter.get('/by-election/:electionId', candidateController.getAllCandidates)
 
-router.post('/add', candidateController.addNewCandidate)
+candidateRouter.post('/add', candidateController.addNewCandidate)
 
-router.put('/api/update/:id', candidateController.updateCandidate)
+candidateRouter.put('/api/update/:id', candidateController.updateCandidate)
 
-router.delete('/api/delete/:id', candidateController.deleteCandidate)
+candidateRouter.delete('/api/delete/:id', candidateController.deleteCandidate)
 
-export default router;
+export default candidateRouter;

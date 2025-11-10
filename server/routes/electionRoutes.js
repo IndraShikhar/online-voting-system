@@ -1,20 +1,20 @@
 import express from "express"
 import electionController from "../controllers/electionController.js"
-const router = express.Router();
+const electionRouter = express.Router();
 
-router.post('/create', electionController.createNewElection)
+electionRouter.post('/create', electionController.createNewElection)
 
-router.get('/', electionController.getAllElections)
+electionRouter.get('/', electionController.getAllElections)
 
-router.get('/:id', electionController.getDetailOfElection)
+electionRouter.get('/:id', electionController.getDetailOfElection)
 
-router.patch('/start/:id', electionController.startElection)
+electionRouter.patch('/start/:id', electionController.startElection)
 
-router.patch('/end/:id', electionController.endElection)
+electionRouter.patch('/end/:id', electionController.endElection)
 
-router.patch('/declare-result/:id', electionController.declareResults)
+electionRouter.patch('/declare-result/:id', electionController.declareResults)
 
-router.delete('/delete/:id', electionController.deleteElection)
+electionRouter.delete('/delete/:id', electionController.deleteElection)
 
 
-export default router;
+export default electionRouter;
