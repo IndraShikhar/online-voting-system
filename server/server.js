@@ -1,6 +1,12 @@
 import express from 'express';
 import dotenv from 'dotenv';
 
+//Route Handler import:
+import CandidateRouter from './routes/candidateRoutes.js';
+import userRoute from "./routes/userRoutes.js"
+import electionsRoute from "./routes/electionRoutes.js"
+import votingRoute from "./routes/voteRoutes.js"
+
 dotenv.config();
 
 const app = express();
@@ -13,3 +19,9 @@ app.listen(port, () => {
 app.get('/', (req, res) => {
   res.send('Hello, World!');
 });
+
+//Different Routes Handler:
+app.use("/api/candidates", CandidateRouter);
+app.use('/api/users', userRoute);
+app.use('/api/elections', electionsRoute);
+app.use('/api/votes', votingRoute);
