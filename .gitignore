@@ -16,7 +16,6 @@ Thumbs.db
 .env.production.local
 
 # Local database files or credentials
-*.sql
 *.db
 *.sqlite
 
