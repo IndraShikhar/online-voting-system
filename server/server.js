@@ -3,9 +3,12 @@ import dotenv from 'dotenv';
 
 //Route Handler import:
 import CandidateRouter from './routes/candidateRoutes.js';
-import userRoute from "./routes/userRoutes.js"
-import electionsRoute from "./routes/electionRoutes.js"
-import votingRoute from "./routes/voteRoutes.js"
+import userRoute from './routes/userRoutes.js';
+import electionsRoute from './routes/electionRoutes.js';
+import votingRoute from './routes/voteRoutes.js';
+
+// Error Handler import:
+import globalErrorHandler from './controllers/errorController.js';
 
 dotenv.config();
 
@@ -21,7 +24,9 @@ app.get('/', (req, res) => {
 });
 
 //Different Routes Handler:
-app.use("/api/candidates", CandidateRouter);
+app.use('/api/candidates', CandidateRouter);
 app.use('/api/users', userRoute);
 app.use('/api/elections', electionsRoute);
 app.use('/api/votes', votingRoute);
+
+app.use(globalErrorHandler);

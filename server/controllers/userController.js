@@ -1,24 +1,20 @@
+import catchAsync from '../utils/catchAsync.js';
 import db from '../utils/db.js';
 
+// throw a new error using: return next(new AppError('message', statusCode));
+
 const userController = {
-  async getAllUsers(req, res) {
+  getAllUsers: catchAsync(async (req, res, next) => {
     // Get list of all users (admin only)
-    try {
-      const [users] = await db.query('SELECT * FROM users');
-      res.status(200).json({
-        status: 'success',
-        results: users.length,
-        data: {
-          users,
-        },
-      });
-    } catch (error) {
-      console.error(error);
-      res
-        .status(500)
-        .json({ status: 'error', message: 'Error fetching users' });
-    }
-  },
+    const [users] = await db.query('SELECT * FROM users');
+    res.status(200).json({
+      status: 'success',
+      results: users.length,
+      data: {
+        users,
+      },
+    });
+  }),
 
   registerUser(req, res) {
     // Register a new user (voter/admin)
