@@ -1,5 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import cookieParser from 'cookie-parser';
 
 //Route Handler import:
 import CandidateRouter from './routes/candidateRoutes.js';
@@ -22,6 +23,9 @@ app.listen(port, () => {
 app.get('/', (req, res) => {
   res.send('Hello, World!');
 });
+
+app.use(cookieParser());
+app.use(express.json());
 
 //Different Routes Handler:
 app.use('/api/candidates', CandidateRouter);

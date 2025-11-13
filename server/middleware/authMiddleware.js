@@ -1,5 +1,5 @@
-import AppError from '../utils/appError';
-import catchAsync from '../utils/catchAsync';
+import AppError from '../utils/appError.js';
+import catchAsync from '../utils/catchAsync.js';
 import db from '../utils/db.js';
 import jwt from 'jsonwebtoken';
 import { promisify } from 'util';
@@ -27,10 +27,9 @@ const authMiddleware = {
     const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
     // 3) Check if user still exists
-    const [currentUser] = await db.query(
-      'SELECT * FROM users WHERE user_id = ?',
-      [decoded.id]
-    );
+    const [currentUser] = await db
+      .query('SELECT * FROM users WHERE user_id = ?', [decoded.id])
+      .then((results) => results[0]);
 
     if (!currentUser) {
       return next(
@@ -50,6 +49,7 @@ const authMiddleware = {
   restrictTo: (...roles) => {
     return (req, res, next) => {
       // roles ['admin', 'voter']. role='admin'
+
       if (!roles.includes(req.user.role)) {
         return next(
           new AppError('You do not have permission to perform this action', 403)
