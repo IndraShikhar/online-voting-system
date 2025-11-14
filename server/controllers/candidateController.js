@@ -1,5 +1,6 @@
-import catchAsync from '../utils/catchAsync.js';
 import db from './../utils/db.js';
+import { uploadBufferToCloudinary } from '../utils/uploadToCloudinary.js';
+import catchAsync from '../utils/catchAsync.js';
 
 const candidateController = {
   // 1. Get list of all candidates
@@ -50,8 +51,8 @@ const candidateController = {
 
   // 4. Add a new candidate (Admin only)
   addNewCandidate: catchAsync(async function (req, res) {
-    const { election_id, name, party, avatar_url, votes, vote_share } =
-      req.body;
+    const { election_id, name, party, votes, vote_share } = req.body;
+
     if (!election_id || !name || !party) {
       return res.status(400).json({
         status: 'fail',
@@ -59,15 +60,38 @@ const candidateController = {
       });
     }
 
+    let avatar_url = null;
+
+    // If file is uploaded → upload to Cloudinary
+    if (req.file?.buffer) {
+      try {
+        const result = await uploadBufferToCloudinary(req.file.buffer, {
+          folder: 'candidates_avatars',
+          resource_type: 'image',
+        });
+
+        avatar_url = result.secure_url;
+      } catch (err) {
+        console.error('Cloudinary upload error:', err);
+        return res.status(500).json({
+          status: 'error',
+          message: 'Image upload failed',
+        });
+      }
+    }
+
+    // Insert into DB with avatar_url
     const [result] = await db.query(
-      'INSERT INTO candidates (election_id, name, party, avatar_url, votes, vote_share) VALUES (?, ?, ?, ?, ?, ?)',
+      `INSERT INTO candidates 
+        (election_id, name, party, avatar_url, votes, vote_share) 
+       VALUES (?, ?, ?, ?, ?, ?)`,
       [
         election_id,
         name,
         party,
-        avatar_url || null,
-        votes || 0,
-        vote_share || 0.0,
+        avatar_url || null, // store Cloudinary URL
+        votes ? Number(votes) : 0,
+        vote_share ? Number(vote_share) : 0.0,
       ]
     );
 
@@ -75,6 +99,7 @@ const candidateController = {
       status: 'success',
       message: 'Candidate added successfully',
       candidate_id: result.insertId,
+      avatar_url,
     });
   }),
 
