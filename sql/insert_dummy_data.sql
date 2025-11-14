@@ -8,7 +8,6 @@ VALUES
 (3, 'alice_smith', NULL, 'alice_smith@example.com', 'password123', 'voter', '2025-11-13 11:37:09'),
 (4, 'Anahi_Halvorson58', 'Ollie Steuber Jr.', 'Mohamed89@hotmail.com', 'password123', 'voter', '2025-11-13 15:26:05');
 
-
 INSERT INTO elections 
 (election_id, title, description, start_time, end_time, status, winner_candidate_id, created_by, created_at)
 VALUES
