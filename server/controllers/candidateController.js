@@ -35,7 +35,7 @@ const candidateController = {
 
   // 3. Get all candidates for a specific election
   getAllCandidates: catchAsync(async function (req, res) {
-    const { election_id } = req.params;
+    const election_id = req.params.electionId;
     const [rows] = await db.query(
       'SELECT * FROM candidates WHERE election_id = ?',
       [election_id]
