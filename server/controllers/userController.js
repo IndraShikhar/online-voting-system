@@ -46,8 +46,6 @@ const userController = {
   }),
 
   loginUser: catchAsync(async (req, res, next) => {
-    console.log(req.body);
-
     const { username, email, password } = req.body;
 
     const [user] = await db
@@ -56,8 +54,6 @@ const userController = {
         username,
       ])
       .then((results) => results[0]);
-
-    console.log(user, isCorrectPassword(password, user.password));
 
     if (!user || !(await isCorrectPassword(password, user.password))) {
       return next(new AppError('Incorrect email or password', 401));
