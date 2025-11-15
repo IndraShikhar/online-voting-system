@@ -1,6 +1,17 @@
-import React from "react";
+import React, { useEffect } from "react";
 import LoginForm from "../components/LoginForm";
+import { useAuth } from "../auth/AuthContext";
+import { useNavigate } from "react-router-dom";
 export default function LoginPage() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      if (user.role === 'admin') navigate('/admin/dashboard');
+      else navigate('/voter/dashboard');
+    }
+  }, [user, navigate]);
   return (
     <div className="dark min-h-screen w-full grid grid-cols-1 lg:grid-cols-2">
 

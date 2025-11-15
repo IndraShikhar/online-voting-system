@@ -39,11 +39,11 @@ export default function AddCandidate() {
             className="w-full border p-2 rounded-lg"
           >
             <option value="">Choose...</option>
-            {elections.map((e) => (
+            {/* {elections.map((e) => (
               <option key={e.election_id} value={e.election_id}>
                 {e.title}
               </option>
-            ))}
+            ))} */}
           </select>
         </label>
 

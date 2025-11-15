@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -8,11 +8,39 @@ import {
 } from "@tabler/icons-react";
 import LogoIcon from "./ui/Logo/LogoIcon";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import authService from "../services/authService";
+import { useAuth } from "../auth/AuthContext";
 
 export default function LoginForm() {
-    const handleSubmit = (e) => {
+    const navigate = useNavigate();
+    const { login } = useAuth();
+
+    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Form submitted");
+        setError("");
+        setLoading(true);
+        try {
+            const data = await authService.login({ username, email, password });
+            const user = data.data.user;
+            const token = data.token;
+            // store minimal payload in context
+            login({ id: user.user_id, role: user.role, name: user.name, token });
+            // redirect based on role
+            if (user.role === 'admin') navigate('/admin/dashboard');
+            else navigate('/voter/dashboard');
+        } catch (err) {
+            console.error(err);
+            setError(err.response?.data?.message || err.message || 'Login failed');
+        } finally {
+            setLoading(false);
+        }
     };
     return (
         <div
@@ -32,20 +60,25 @@ export default function LoginForm() {
             </div>
             <form className="my-8" onSubmit={handleSubmit}>
                 <LabelInputContainer className="mb-4">
-                    <Label htmlFor="username">Username</Label>
-                    <Input id="username" placeholder="projectmayhem" type="text" />
+                    <Label htmlFor="username">Username or Email</Label>
+                    <Input id="username" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="projectmayhem" type="text" />
+                </LabelInputContainer>
+                <LabelInputContainer className="mb-4">
+                    <Label htmlFor="email">Email (optional)</Label>
+                    <Input id="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" type="email" />
                 </LabelInputContainer>
                 <LabelInputContainer className="mb-8">
                     <Label htmlFor="password">Password</Label>
-                    <Input id="password" placeholder="••••••••" type="password" />
+                    <Input id="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" type="password" />
                 </LabelInputContainer>
 
                 <button
                     className="group/btn relative block h-10 w-full rounded-md bg-gradient-to-br from-neutral-800 to-neutral-700 font-medium text-white shadow-[0px_1px_0px_0px_rgba(255,255,255,0.06)_inset]"
                     type="submit">
-                    Login
+                    {loading ? 'Signing in...' : 'Login'}
                     <BottomGradient />
                 </button>
+                {error && <div className="text-sm text-red-400 mt-2">{error}</div>}
                 <div
                     className="my-8 h-px w-full bg-linear-to-r from-transparent via-neutral-300 to-transparent dark:via-neutral-700" />
 
