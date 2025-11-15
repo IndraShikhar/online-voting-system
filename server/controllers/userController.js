@@ -46,11 +46,11 @@ const userController = {
   }),
 
   loginUser: catchAsync(async (req, res, next) => {
-    const { username, email, password } = req.body;
+    const { username, password } = req.body;
 
     const [user] = await db
       .query('SELECT * FROM users WHERE email = ? OR username = ?', [
-        email,
+        username,
         username,
       ])
       .then((results) => results[0]);
@@ -62,6 +62,16 @@ const userController = {
     // 3) If everything ok, send token to client
     createSendToken(user, 200, req, res);
   }),
+
+  logoutUser: (req, res) => {
+    // Overwrite the cookie with a short-lived dummy value to remove it from the browser
+    res.cookie('jwt', 'loggedout', {
+      expires: new Date(Date.now() + 10 * 1000),
+      httpOnly: true,
+    });
+
+    res.status(200).json({ status: 'success', message: 'Logged out' });
+  },
 
   getUserProfile: (req, res, next) => {
     // Get logged in user's profile

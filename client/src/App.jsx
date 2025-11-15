@@ -7,13 +7,14 @@ import Contact from "../../client/src/pages/Contact";
 import Home from "../../client/src/pages/Home";
 import Login from "../../client/src/pages/Login";
 import Register from "../../client/src/pages/Register";
-import Create from "./Elections/create";
+import Logout from "../../client/src/pages/Logout";
 
-import AddCandidate from "../src/pages/adminCandidates/AddCandidate";
-import AdminDashboard from "../src/pages/AdminDashboard";
+import AddCandidate from "../src/pages/admin/AddCandidate";
+import AdminDashboard from "../src/pages/admin/AdminDashboard";
 import AdminProfile from "../src/pages/AdminProfile";
-import CandidateList from "../src/pages/CandidateList";
-// import CreateElection from "../pages/admin/CreateElection";
+import CandidateList from "../src/pages/admin/CandidateList";
+import CreateElection from "../src/pages/admin/CreateElection";
+
 import EditElection from "../src/pages/EditElection";
 import ElectionDetail from "../src/pages/ElectionDetail";
 import ElectionList from "../src/pages/ElectionList";
@@ -29,11 +30,16 @@ import VoterProfile from "../src/pages/voter/VoterProfile";
 
 import NotFound from "../src/pages/NotFound";
 import Unauthorized from "../src/pages/Unauthorized";
+import AdminLayout from "./components/AdminLayout";
+import VoterLayout from "./components/VoterLayout";
+import LoginForm from "./components/LoginForm";
+
 
 const router = createBrowserRouter([
 
   { path: "/", element: <Home /> },
   { path: "/login", element: <Login /> },
+  { path: "/logout", element: <Logout /> },
   { path: "/register", element: <Register /> },
   { path: "/about", element: <About /> },
   { path: "/contact", element: <Contact /> },
@@ -43,14 +49,16 @@ const router = createBrowserRouter([
     path: "/admin",
     element: (
       <ProtectedRoute allowedRoles={["admin"]}>
-        <Outlet />
+        <AdminLayout >
+          <Outlet />
+        </AdminLayout>
       </ProtectedRoute>
     ),
     children: [
       { index: true, element: <AdminDashboard /> },
       { path: "dashboard", element: <AdminDashboard /> },
       { path: "elections", element: <ElectionList /> },
-      { path: "elections/create", element: <Create />},
+      { path: "elections/create", element: <CreateElection /> },
       { path: "elections/:id", element: <ElectionDetail /> },
       { path: "elections/:id/edit", element: <EditElection /> },
       { path: "candidates", element: <CandidateList /> },
@@ -60,12 +68,14 @@ const router = createBrowserRouter([
       { path: "profile", element: <AdminProfile /> },
     ],
   },
- 
+
   {
     path: "/voter",
     element: (
       <ProtectedRoute allowedRoles={["voter"]}>
-        <Outlet />
+        <VoterLayout>
+          <Outlet />
+        </VoterLayout>
       </ProtectedRoute>
     ),
     children: [
@@ -78,7 +88,7 @@ const router = createBrowserRouter([
       { path: "profile", element: <VoterProfile /> },
     ],
   },
- 
+
   { path: "/unauthorized", element: <Unauthorized /> },
   { path: "*", element: <NotFound /> },
 ]);
