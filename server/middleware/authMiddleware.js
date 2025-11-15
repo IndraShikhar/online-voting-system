@@ -26,7 +26,7 @@ const authMiddleware = {
     // 2) Verification token
     const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
-    // 3) Check if user still exists
+    // 3) Check if  still exists
     const [currentUser] = await db
       .query('SELECT * FROM users WHERE user_id = ?', [decoded.id])
       .then((results) => results[0]);
