@@ -17,7 +17,6 @@ export default function LoginForm() {
     const { login } = useAuth();
 
     const [username, setUsername] = useState("");
-    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -27,7 +26,7 @@ export default function LoginForm() {
         setError("");
         setLoading(true);
         try {
-            const data = await authService.login({ username, email, password });
+            const data = await authService.login({ username, password });
             const user = data.data.user;
             const token = data.token;
             // store minimal payload in context
@@ -62,10 +61,6 @@ export default function LoginForm() {
                 <LabelInputContainer className="mb-4">
                     <Label htmlFor="username">Username or Email</Label>
                     <Input id="username" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="projectmayhem" type="text" />
-                </LabelInputContainer>
-                <LabelInputContainer className="mb-4">
-                    <Label htmlFor="email">Email (optional)</Label>
-                    <Input id="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" type="email" />
                 </LabelInputContainer>
                 <LabelInputContainer className="mb-8">
                     <Label htmlFor="password">Password</Label>

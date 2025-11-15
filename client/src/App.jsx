@@ -7,6 +7,7 @@ import Contact from "../../client/src/pages/Contact";
 import Home from "../../client/src/pages/Home";
 import Login from "../../client/src/pages/Login";
 import Register from "../../client/src/pages/Register";
+import Logout from "../../client/src/pages/Logout";
 
 import AddCandidate from "../src/pages/admin/AddCandidate";
 import AdminDashboard from "../src/pages/admin/AdminDashboard";
@@ -38,8 +39,8 @@ const router = createBrowserRouter([
 
   { path: "/", element: <Home /> },
   { path: "/login", element: <Login /> },
+  { path: "/logout", element: <Logout /> },
   { path: "/register", element: <Register /> },
-  { path: "/demo", element: <Login /> },
   { path: "/about", element: <About /> },
   { path: "/contact", element: <Contact /> },
 
@@ -71,11 +72,11 @@ const router = createBrowserRouter([
   {
     path: "/voter",
     element: (
-      // <ProtectedRoute allowedRoles={["voter"]}>
-      <VoterLayout>
-        <Outlet />
-      </VoterLayout>
-      // </ProtectedRoute>
+      <ProtectedRoute allowedRoles={["voter"]}>
+        <VoterLayout>
+          <Outlet />
+        </VoterLayout>
+      </ProtectedRoute>
     ),
     children: [
       { index: true, element: <VoterDashboard /> },
