@@ -30,18 +30,14 @@ import VoterProfile from "../src/pages/voter/VoterProfile";
 import NotFound from "../src/pages/NotFound";
 import Unauthorized from "../src/pages/Unauthorized";
 import AdminLayout from "./components/AdminLayout";
-
-import VoterSidebar from "./components/ui/Sidebar/VoterSidebar";
-import AdminSidebar from "./components/ui/Sidebar/AdminSidebar";
-import { cn } from "./lib/utils";
 import VoterLayout from "./components/VoterLayout";
+
 
 const router = createBrowserRouter([
 
   { path: "/", element: <Home /> },
   { path: "/login", element: <Login /> },
   { path: "/register", element: <Register /> },
-  { path: "/sidebar-demo", element: <VoterSidebar /> },
   { path: "/about", element: <About /> },
   { path: "/contact", element: <Contact /> },
 
