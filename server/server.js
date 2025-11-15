@@ -31,6 +31,7 @@ app.use((req, res, next) => {
 
 app.use(cookieParser());
 app.use(express.json());
+app.use(express.urlencoded());
 
 //Different Routes Handler:
 app.use('/api/candidates', CandidateRouter);
