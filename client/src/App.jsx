@@ -31,6 +31,7 @@ import NotFound from "../src/pages/NotFound";
 import Unauthorized from "../src/pages/Unauthorized";
 import AdminLayout from "./components/AdminLayout";
 import VoterLayout from "./components/VoterLayout";
+import LoginForm from "./components/LoginForm";
 
 
 const router = createBrowserRouter([
@@ -38,6 +39,7 @@ const router = createBrowserRouter([
   { path: "/", element: <Home /> },
   { path: "/login", element: <Login /> },
   { path: "/register", element: <Register /> },
+  { path: "/demo", element: <Login /> },
   { path: "/about", element: <About /> },
   { path: "/contact", element: <Contact /> },
 
