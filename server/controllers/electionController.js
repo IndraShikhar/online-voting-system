@@ -5,8 +5,9 @@ import { toMySQLDate } from '../utils/utils.js';
 const electionController = {
   createNewElection: catchAsync(async (req, res) => {
     // Create a new election (admin only)
-    const { title, description, start_time, end_time } = req.body;
-
+    const { title, description} = req.body;
+    const start_time = req.body.start_time || null;
+    const end_time = req.body.end_time || null;
     const status = 'upcoming';
     const created_by = req.user.user_id;
 

@@ -1,6 +1,5 @@
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import { AuthProvider } from "../../client/src/auth/AuthContext";
-import ProtectedRoute from "../../client/src/auth/ProtectedRoute";
 
 import About from "../../client/src/pages/About";
 import Contact from "../../client/src/pages/Contact";
@@ -11,15 +10,15 @@ import Logout from "../../client/src/pages/Logout";
 
 import AddCandidate from "../src/pages/admin/AddCandidate";
 import AdminDashboard from "../src/pages/admin/AdminDashboard";
-import AdminProfile from "../src/pages/AdminProfile";
+import AdminProfile from "../src/pages/admin/AdminProfile";
 import CandidateList from "../src/pages/admin/CandidateList";
 import CreateElection from "../src/pages/admin/CreateElection";
 
+import VoterList from "../src/pages/admin/VoterList";
 import EditElection from "../src/pages/EditElection";
 import ElectionDetail from "../src/pages/ElectionDetail";
 import ElectionList from "../src/pages/ElectionList";
 import ResultOverview from "./pages/ResultOverview";
-import VoterList from "../src/pages/admin/VoterList";
 
 import VoterElectionDetail from "../src/pages/voter/ElectionDetail";
 import VoterElectionList from "../src/pages/voter/ElectionList";
@@ -34,6 +33,9 @@ import AdminLayout from "./components/AdminLayout";
 import VoterLayout from "./components/VoterLayout";
 import LoginForm from "./components/LoginForm";
 
+import EditProfile from "./pages/admin/EditProfile";
+import AllElections from "./pages/admin/AllElections";
+import ProtectedRoute from "./auth/ProtectedRoute";
 
 const router = createBrowserRouter([
 
@@ -43,7 +45,6 @@ const router = createBrowserRouter([
   { path: "/register", element: <Register /> },
   { path: "/about", element: <About /> },
   { path: "/contact", element: <Contact /> },
-
 
   {
     path: "/admin",
@@ -57,7 +58,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <AdminDashboard /> },
       { path: "dashboard", element: <AdminDashboard /> },
-      { path: "elections", element: <ElectionList /> },
+      { path: "elections", element: <AllElections/> },
       { path: "elections/create", element: <CreateElection /> },
       { path: "elections/:id", element: <ElectionDetail /> },
       { path: "elections/:id/edit", element: <EditElection /> },
@@ -66,6 +67,7 @@ const router = createBrowserRouter([
       { path: "voters", element: <VoterList /> },
       { path: "results", element: <ResultOverview /> },
       { path: "profile", element: <AdminProfile /> },
+      { path: "profile/edit", element: <EditProfile/> },
     ],
   },
 

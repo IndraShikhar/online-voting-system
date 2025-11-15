@@ -1,9 +1,8 @@
-import React, { useState } from "react";
-import { Sidebar, SidebarBody, SidebarLink } from "./Sidebar";
-import { LayoutDashboard, UserCog, Settings, LogOut, ListChecks, UserPlus, Users, BarChart3 } from "lucide-react";
-import { motion } from "framer-motion";
+import { BarChart3, LayoutDashboard, ListChecks, LogOut, Settings, UserPlus, Users } from "lucide-react";
+import { useState } from "react";
 import Logo from "../Logo/Logo";
 import LogoIcon from "../Logo/LogoIcon";
+import { Sidebar, SidebarBody, SidebarLink } from "./Sidebar";
 
 export function AdminSidebar() {
     const links = [
@@ -60,7 +59,7 @@ export function AdminSidebar() {
                     <SidebarLink
                         link={{
                             label: "Manu Arora",
-                            href: "/profile",
+                            href: "/admin/profile",
                             icon: (
                                 <img
                                     src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=80&q=80&auto=format&fit=crop"
