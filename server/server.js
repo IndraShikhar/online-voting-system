@@ -32,6 +32,7 @@ app.use((req, res, next) => {
 
 app.use(cookieParser());
 app.use(express.json());
+app.use(express.urlencoded());
 
 // CORS configuration
 const allowedOrigins = process.env.CLIENT_URL

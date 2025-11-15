@@ -3,14 +3,16 @@ import catchAsync from '../utils/catchAsync.js';
 import db from '../utils/db.js';
 import createSendToken from '../utils/jwt.js';
 import { isCorrectPassword, filterObj } from '../utils/utils.js';
-
-// throw a new error using: return next(new AppError('message', statusCode));
+import { uploadBufferToCloudinary } from '../utils/uploadToCloudinary.js';
 
 const userController = {
+
+  // ==============================
+  // 1. GET ALL USERS
+  // ==============================
   getAllUsers: catchAsync(async (req, res, next) => {
-    // Get list of all users (admin only)
     const [users] = await db.query(
-      'SELECT user_id, username,email,name,role FROM users'
+      'SELECT user_id, username, email, avatar_url, name, role FROM users'
     );
 
     res.status(200).json({
@@ -22,29 +24,33 @@ const userController = {
     });
   }),
 
+  // ==============================
+  // 2. REGISTER USER
+  // ==============================
   registerUser: catchAsync(async (req, res, next) => {
-    const newUser = {
-      username: req.body.username,
-      name: req.body.name,
-      email: req.body.email,
-      password: req.body.password,
-      role: 'voter',
-    };
-    // Create a new user
+    console.log("Calling register user method:");
+    console.log(req);
+    const { username, name, email, password } = req.body;
+
+    
+    // Insert into DB
+    let avatar_url = 'https://res.cloudinary.com/dn8ofrxix/image/upload/v1763201582/users_avatars/lbdmmsl8vd6boyzw68yk.jpg';
     await db.query(
-      'INSERT INTO users (username, name, email, password, role) VALUES (?, ?, ?, ?, ?)',
-      [
-        newUser.username,
-        newUser.name,
-        newUser.email,
-        newUser.password,
-        newUser.role,
-      ]
+      `INSERT INTO users (username, name, email, password, avatar_url, role)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [username, name, email, password, avatar_url, 'voter']
     );
+
+    const newUser = { username, name, email, avatar_url, role: 'voter' };
+
+    // console.log("Everything well till now.");
 
     createSendToken(newUser, 201, req, res);
   }),
 
+  // ==============================
+  // 3. LOGIN USER
+  // ==============================
   loginUser: catchAsync(async (req, res, next) => {
     const { username, password } = req.body;
 
@@ -59,7 +65,6 @@ const userController = {
       return next(new AppError('Incorrect email or password', 401));
     }
 
-    // 3) If everything ok, send token to client
     createSendToken(user, 200, req, res);
   }),
 
@@ -74,73 +79,90 @@ const userController = {
   },
 
   getUserProfile: (req, res, next) => {
-    // Get logged in user's profile
-
     req.user.password = undefined;
 
     res.status(200).json({
       status: 'success',
-      data: {
-        user: req.user,
-      },
+      data: { user: req.user },
     });
   },
 
+  // ==============================
+  // 5. UPDATE USER PROFILE
+  // ==============================
   updateUserProfile: catchAsync(async (req, res, next) => {
-    // 1) Create error if user POSTs password data
-    if (req.body.password) {
-      return next(new AppError('This route is not for password updates.', 400));
+  console.log("BODY:", req.body);
+  console.log("FILE:", req.file);
+
+  // Stop password changes
+  if (req.body.password) {
+    return next(new AppError('This route is not for password updates.', 400));
+  }
+
+  const allowed = ['name', 'email'];
+  const filteredBody = filterObj(req.body, ...allowed);
+
+  let avatar_url ;
+
+  // File upload
+  if (req.file?.buffer) {
+    try {
+      
+      const result = await uploadBufferToCloudinary(req.file.buffer, {
+        folder: 'users_avatars',
+        resource_type: 'image',
+      });
+      avatar_url = result.secure_url;
+      filteredBody.avatar_url = avatar_url;
+    } catch (err) {
+      return next(new AppError('Avatar upload failed', 500));
     }
+  }
 
-    // 2) Filtered out unwanted fields names that are not allowed to be updated
-    const filteredBody = filterObj(req.body, 'name', 'email', 'username');
+  // Update user
+  await db.query('UPDATE users SET ? WHERE user_id = ?', [
+    filteredBody,
+    req.user.user_id,
+  ]);
 
-    // 3) Update user document
-    const updatedUser = await db.query('UPDATE users SET ? WHERE user_id = ?', [
-      filteredBody,
-      req.user.user_id,
-    ]);
+  // Return updated user
+  const [rows] = await db.query(
+    'SELECT user_id, username, email, name, avatar_url, role FROM users WHERE user_id = ?',
+    [req.user.user_id]
+  );
 
-    const [user] = await db
-      .query('SELECT * FROM users WHERE user_id = ?', [req.user.user_id])
-      .then((results) => results[0]);
+  res.status(200).json({
+    status: 'success',
+    data: { user: rows[0] },
+  });
+}),
 
-    user.password = undefined;
 
-    res.status(200).json({
-      status: 'success',
-      data: {
-        user: user,
-      },
-    });
-  }),
-
+  // ==============================
+  // 6. BLOCK USER
+  // ==============================
   blockUser: catchAsync(async (req, res, next) => {
-    // 1) Get user ID from params
-    const userId = req.params.userId;
-    const banned_by = req.user.user_id;
+    const username = req.params.username; // updated
+    const banned_by = req.user.username;  // updated
     const election_id = req.body.election_id || null;
     const reason = req.body.reason || null;
     const ban_type = election_id ? 'election' : 'permanent';
 
-    // 2) Insert user to bans table
+    // Insert into bans
     await db.query(
-      'INSERT INTO bans (user_id, banned_by, election_id, reason, ban_type) VALUES (?, ?, ?, ?, ?)',
-      [userId, banned_by, election_id, reason, ban_type]
+      `INSERT INTO bans (username, banned_by, election_id, reason, ban_type)
+       VALUES (?, ?, ?, ?, ?)`,
+      [username, banned_by, election_id, reason, ban_type]
     );
 
-    // Block or deactivate a user (admin only)
     res.status(200).json({
       status: 'success',
       data: {
-        message: `User with ID ${userId} has been blocked.`,
-        data: {
-          user_id: userId,
-          banned_by,
-          election_id,
-          reason,
-          ban_type,
-        },
+        message: `User '${username}' has been blocked.`,
+        banned_by,
+        election_id,
+        reason,
+        ban_type,
       },
     });
   }),
