@@ -30,11 +30,16 @@ import VoterProfile from "../src/pages/voter/VoterProfile";
 import NotFound from "../src/pages/NotFound";
 import Unauthorized from "../src/pages/Unauthorized";
 
+import VoterSidebar from "./components/ui/Sidebar/VoterSidebar";
+import AdminSidebar from "./components/ui/Sidebar/AdminSidebar";
+import { cn } from "./lib/utils";
+
 const router = createBrowserRouter([
 
   { path: "/", element: <Home /> },
   { path: "/login", element: <Login /> },
   { path: "/register", element: <Register /> },
+  { path: "/sidebar-demo", element: <VoterSidebar /> },
   { path: "/about", element: <About /> },
   { path: "/contact", element: <Contact /> },
 
@@ -43,14 +48,26 @@ const router = createBrowserRouter([
     path: "/admin",
     element: (
       <ProtectedRoute allowedRoles={["admin"]}>
-        <Outlet />
+        <div
+          className={cn(
+            "rounded-md flex flex-col md:flex-row bg-gray-100 dark:bg-neutral-800 w-full flex-1 mx-auto border border-neutral-200 dark:border-neutral-700 overflow-hidden",
+            "h-screen"
+          )}
+        >
+          <AdminSidebar />
+          <div className="flex flex-1">
+            <div className="rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 flex flex-col gap-2 flex-1 w-full h-full">
+              <Outlet />
+            </div>
+          </div>
+        </div>
       </ProtectedRoute>
     ),
     children: [
       { index: true, element: <AdminDashboard /> },
       { path: "dashboard", element: <AdminDashboard /> },
       { path: "elections", element: <ElectionList /> },
-      { path: "elections/create", element: <Create />},
+      { path: "elections/create", element: <Create /> },
       { path: "elections/:id", element: <ElectionDetail /> },
       { path: "elections/:id/edit", element: <EditElection /> },
       { path: "candidates", element: <CandidateList /> },
@@ -60,12 +77,24 @@ const router = createBrowserRouter([
       { path: "profile", element: <AdminProfile /> },
     ],
   },
- 
+
   {
     path: "/voter",
     element: (
       <ProtectedRoute allowedRoles={["voter"]}>
-        <Outlet />
+        <div
+          className={cn(
+            "rounded-md flex flex-col md:flex-row bg-gray-100 dark:bg-neutral-800 w-full flex-1 mx-auto border border-neutral-200 dark:border-neutral-700 overflow-hidden",
+            "h-screen"
+          )}
+        >
+          <VoterSidebar />
+          <div className="flex flex-1">
+            <div className="rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 flex flex-col gap-2 flex-1 w-full h-full">
+              <Outlet />
+            </div>
+          </div>
+        </div>
       </ProtectedRoute>
     ),
     children: [
@@ -78,7 +107,7 @@ const router = createBrowserRouter([
       { path: "profile", element: <VoterProfile /> },
     ],
   },
- 
+
   { path: "/unauthorized", element: <Unauthorized /> },
   { path: "*", element: <NotFound /> },
 ]);
