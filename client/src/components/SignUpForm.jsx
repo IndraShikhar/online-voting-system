@@ -1,0 +1,133 @@
+"use client";
+import React, { useState } from "react";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import {
+  IconBrandGoogle,
+} from "@tabler/icons-react";
+import LogoIcon from "./ui/Logo/LogoIcon";
+import { Link, useNavigate } from "react-router-dom";
+import authService from "../services/authService";
+import { useAuth } from "../auth/AuthContext";
+
+export default function SignupForm() {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
+  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    try {
+      const data = await authService.register({ username, name, email, password });
+      const user = data.data.user;
+      const token = data.token;
+      login({ id: user.user_id, role: user.role, name: user.name, token });
+      if (user.role === 'admin') navigate('/admin/dashboard');
+      else navigate('/voter/dashboard');
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.message || err.message || 'Registration failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+  return (
+    <div
+      className="shadow-input mx-auto w-full max-w-md rounded-none bg-neutral-900 p-4 md:rounded-2xl md:p-8 border border-neutral-800 text-white">
+      <div className="flex w-full justify-center items-center gap-4">
+        <LogoIcon className="h-18 w-18" />
+        <div className="flex flex-col justify-center items-start gap-2">
+          <div className="text-white font-bold text-4xl whitespace-pre">
+            Smart
+            <span className="text-blue-600">
+              Vote
+            </span>
+          </div>
+          <span className="text-white text-xs whitespace-pre">
+            A secure online voting management system.</span>
+        </div>
+      </div>
+      <form className="my-8" onSubmit={handleSubmit}>
+        <div
+          className="mb-4 flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-2">
+          <LabelInputContainer>
+            <Label htmlFor="firstname">Full name</Label>
+            <Input id="firstname" value={name} onChange={(e) => setName(e.target.value)} placeholder="Tyler Durden" type="text" />
+          </LabelInputContainer>
+          <LabelInputContainer>
+            <Label htmlFor="username">Username</Label>
+            <Input id="username" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="projectmayhem" type="text" />
+          </LabelInputContainer>
+        </div>
+        <LabelInputContainer className="mb-4">
+          <Label htmlFor="email">Email Address</Label>
+          <Input id="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="projectmayhem@fc.com" type="email" />
+        </LabelInputContainer>
+        <LabelInputContainer className="mb-8">
+          <Label htmlFor="password">Password</Label>
+          <Input id="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" type="password" />
+        </LabelInputContainer>
+
+        <button
+          className="group/btn relative block h-10 w-full rounded-md bg-gradient-to-br from-neutral-800 to-neutral-700 font-medium text-white shadow-[0px_1px_0px_0px_rgba(255,255,255,0.06)_inset]"
+          type="submit" disabled={loading}>
+          {loading ? 'Signing up...' : 'Sign up →'}
+          <BottomGradient />
+        </button>
+        {error && <div className="text-sm text-red-400 mt-2">{error}</div>}
+
+        <div
+          className="my-8 h-px w-full bg-linear-to-r from-transparent via-neutral-700 to-transparent" />
+
+        <div className="flex flex-col space-y-4">
+          <button
+            className="group/btn shadow-input relative flex h-10 w-full items-center justify-start space-x-2 rounded-md bg-zinc-800 px-4 font-medium text-white"
+            type="submit">
+            <IconBrandGoogle className="h-4 w-4 text-neutral-200" />
+            <span className="text-sm text-neutral-200">
+              Google
+            </span>
+            <BottomGradient />
+          </button>
+        </div>
+      </form>
+      <p className="text-center text-sm text-muted-foreground mt-2">
+        Already have an account?{" "}
+        <Link to="/login" className="text-primary cursor-pointer hover:underline">
+          Sign In
+        </Link>
+      </p>
+    </div>
+  );
+}
+
+const BottomGradient = () => {
+  return (
+    <>
+      <span
+        className="absolute inset-x-0 -bottom-px block h-px w-full bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-0 transition duration-500 group-hover/btn:opacity-100" />
+      <span
+        className="absolute inset-x-10 -bottom-px mx-auto block h-px w-1/2 bg-gradient-to-r from-transparent via-indigo-500 to-transparent opacity-0 blur-sm transition duration-500 group-hover/btn:opacity-100" />
+    </>
+  );
+};
+
+const LabelInputContainer = ({
+  children,
+  className
+}) => {
+  return (
+    <div className={cn("flex w-full flex-col space-y-2", className)}>
+      {children}
+    </div>
+  );
+};

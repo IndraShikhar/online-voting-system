@@ -52,13 +52,14 @@ const userController = {
   // 3. LOGIN USER
   // ==============================
   loginUser: catchAsync(async (req, res, next) => {
-    const { username, email, password } = req.body;
+    const { username, password } = req.body;
 
-    const [rows] = await db.query(
-      'SELECT * FROM users WHERE email = ? OR username = ?',
-      [email, username]
-    );
-    const user = rows[0];
+    const [user] = await db
+      .query('SELECT * FROM users WHERE email = ? OR username = ?', [
+        username,
+        username,
+      ])
+      .then((results) => results[0]);
 
     if (!user || !(await isCorrectPassword(password, user.password))) {
       return next(new AppError('Incorrect email or password', 401));
@@ -67,9 +68,16 @@ const userController = {
     createSendToken(user, 200, req, res);
   }),
 
-  // ==============================
-  // 4. GET USER PROFILE
-  // ==============================
+  logoutUser: (req, res) => {
+    // Overwrite the cookie with a short-lived dummy value to remove it from the browser
+    res.cookie('jwt', 'loggedout', {
+      expires: new Date(Date.now() + 10 * 1000),
+      httpOnly: true,
+    });
+
+    res.status(200).json({ status: 'success', message: 'Logged out' });
+  },
+
   getUserProfile: (req, res, next) => {
     req.user.password = undefined;
 
