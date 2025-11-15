@@ -31,11 +31,17 @@ import NotFound from "../src/pages/NotFound";
 import Unauthorized from "../src/pages/Unauthorized";
 import AdminLayout from "./components/AdminLayout";
 
+import VoterSidebar from "./components/ui/Sidebar/VoterSidebar";
+import AdminSidebar from "./components/ui/Sidebar/AdminSidebar";
+import { cn } from "./lib/utils";
+import VoterLayout from "./components/VoterLayout";
+
 const router = createBrowserRouter([
 
   { path: "/", element: <Home /> },
   { path: "/login", element: <Login /> },
   { path: "/register", element: <Register /> },
+  { path: "/sidebar-demo", element: <VoterSidebar /> },
   { path: "/about", element: <About /> },
   { path: "/contact", element: <Contact /> },
 
@@ -44,17 +50,16 @@ const router = createBrowserRouter([
     path: "/admin",
     element: (
       // <ProtectedRoute allowedRoles={["admin"]}>
-        <AdminLayout >
-
+      <AdminLayout >
         <Outlet />
-        </AdminLayout>
+      </AdminLayout>
       // </ProtectedRoute>
     ),
     children: [
       { index: true, element: <AdminDashboard /> },
       { path: "dashboard", element: <AdminDashboard /> },
       { path: "elections", element: <ElectionList /> },
-      { path: "elections/create", element: <CreateElection/>},
+      { path: "elections/create", element: <CreateElection /> },
       { path: "elections/:id", element: <ElectionDetail /> },
       { path: "elections/:id/edit", element: <EditElection /> },
       { path: "candidates", element: <CandidateList /> },
@@ -64,13 +69,15 @@ const router = createBrowserRouter([
       { path: "profile", element: <AdminProfile /> },
     ],
   },
- 
+
   {
     path: "/voter",
     element: (
-      <ProtectedRoute allowedRoles={["voter"]}>
+      // <ProtectedRoute allowedRoles={["voter"]}>
+      <VoterLayout>
         <Outlet />
-      </ProtectedRoute>
+      </VoterLayout>
+      // </ProtectedRoute>
     ),
     children: [
       { index: true, element: <VoterDashboard /> },
@@ -82,7 +89,7 @@ const router = createBrowserRouter([
       { path: "profile", element: <VoterProfile /> },
     ],
   },
- 
+
   { path: "/unauthorized", element: <Unauthorized /> },
   { path: "*", element: <NotFound /> },
 ]);

@@ -1,5 +1,5 @@
 
-import { Link, NavLink, Outlet } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import {
   LayoutDashboard,
   User,
@@ -8,54 +8,23 @@ import {
   List,
   LogOut,
 } from "lucide-react";
+import { cn } from "../lib/utils";
+import AdminSidebar from "./ui/Sidebar/AdminSidebar";
 
 export default function AdminLayout() {
-  const navItems = [
-    { to: "/admin", label: "Dashboard", icon: <LayoutDashboard size={18} /> },
-    { to: "/admin/elections/create", label: "Create Election", icon: <PlusCircle size={18} /> },
-    { to: "/admin/candidates", label: "Candidates", icon: <Users size={18} /> },
-    { to: "/admin/candidates/add", label: "Add Candidate", icon: <PlusCircle size={18} /> },
-    { to: "/admin/profile", label: "Profile", icon: <User size={18} /> },
-  ];
-
   return (
-    <div className="flex min-h-screen bg-[#F7F7F7]">
-
-      <aside className="w-72 bg-[#14213D] text-white flex flex-col">
-        <div className="p-6 border-b border-white/10">
-          <h1 className="text-2xl font-semibold">Admin Panel</h1>
-          <p className="text-sm text-gray-300">Online Voting System</p>
+    <div
+      className={cn(
+        "rounded-md flex flex-col md:flex-row bg-gray-100 dark:bg-neutral-800 w-full flex-1 mx-auto border border-neutral-200 dark:border-neutral-700 overflow-hidden",
+        "h-screen"
+      )}
+    >
+      <AdminSidebar />
+      <div className="flex flex-1">
+        <div className="rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 flex flex-col gap-2 flex-1 w-full h-full">
+          <Outlet />
         </div>
-
-        <nav className="flex-1 p-4 space-y-1">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-lg transition ${
-                  isActive
-                    ? "bg-white text-[#14213D] font-semibold"
-                    : "hover:bg-white/10"
-                }`
-              }
-            >
-              {item.icon}
-              {item.label}
-            </NavLink>
-          ))}
-        </nav>
-
-        <div className="p-4 border-t border-white/10">
-          <button className="flex items-center gap-2 px-4 py-2 w-full bg-red-600 text-white rounded-lg">
-            <LogOut size={18} /> Logout
-          </button>
-        </div>
-      </aside>
-
-      <main className="flex-1 p-10">
-        <Outlet />
-      </main>
+      </div>
     </div>
-  );
+  )
 }

@@ -24,6 +24,11 @@ app.get('/', (req, res) => {
   res.send('Hello, World!');
 });
 
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.originalUrl}`);
+  next();
+});
+
 app.use(cookieParser());
 app.use(express.json());
 

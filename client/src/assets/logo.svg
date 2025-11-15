@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160" role="img" aria-labelledby="iTitle iDesc">
+  <title id="iTitle">SmartVote icon</title>
+  <desc id="iDesc">Compact icon: ballot with checkmark inside rounded square.</desc>
+
+  <defs>
+    <linearGradient id="g-icon" x1="0" x2="1">
+      <stop offset="0" stop-color="#06b6d4"/>
+      <stop offset="1" stop-color="#0ea5a4"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="160" height="160" rx="26" fill="url(#g-icon)"/>
+  <!-- ballot -->
+  <g transform="translate(36,30) scale(0.95)">
+    <rect x="0" y="24" width="88" height="56" rx="8" fill="#ffffff" />
+    <!-- slot -->
+    <rect x="20" y="8" width="48" height="8" rx="4" fill="#ffffff" opacity="0.9"/>
+    <!-- check box -->
+    <rect x="56" y="36" width="22" height="22" rx="4" fill="#06b6d4"/>
+    <path d="M 62 44 L 68 50 L 76 38" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>
