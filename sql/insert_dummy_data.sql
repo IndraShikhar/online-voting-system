@@ -1,58 +1,82 @@
-USE voting_system;
+USE voting_system
 
-INSERT INTO users
-(user_id, username, name, email, password, role, created_at)
-VALUES
-(1, 'john_doe', 'john_doe', 'john_doe@example.com', 'password123', 'admin', '2025-11-13 11:37:09'),
-(2, 'jane_do', NULL, 'jane_do@example.com', 'password123', 'voter', '2025-11-13 11:37:09'),
-(3, 'alice_smith', NULL, 'alice_smith@example.com', 'password123', 'voter', '2025-11-13 11:37:09'),
-(4, 'Anahi_Halvorson58', 'Ollie Steuber Jr.', 'Mohamed89@hotmail.com', 'password123', 'voter', '2025-11-13 15:26:05');
-
-INSERT INTO elections 
-(election_id, title, description, start_time, end_time, status, winner_candidate_id, created_by, created_at)
-VALUES
-(1, 'Product Identity Technician', 'Dynamic', '2026-03-14 04:14:19', '2026-05-04 19:55:07', 'active', NULL, NULL, '2025-11-14 16:43:40'),
-(3, 'Senior Data Specialist', 'Product', '2026-07-25 08:06:58', '2026-05-27 08:45:15', 'upcoming', NULL, NULL, '2025-11-14 16:45:55'),
-(4, 'Future Markets Agent', 'Human', '2026-10-07 14:09:58', '2026-02-27 08:45:53', 'upcoming', NULL, NULL, '2025-11-14 16:46:26'),
-(5, 'International Interactions Developer', 'District', '2026-01-27 00:20:26', '2026-04-01 19:43:28', 'upcoming', NULL, NULL, '2025-11-14 16:47:03'),
-(6, 'Forward Branding Orchestrator', 'Corporate', '2025-12-04 16:25:22', '2026-09-30 00:21:04', 'upcoming', NULL, NULL, '2025-11-14 16:47:29'),
-(7, 'Dynamic Paradigm Producer', 'Principal', '2026-09-13 11:18:37', '2026-05-01 07:44:27', 'upcoming', NULL, NULL, '2025-11-14 16:48:05'),
-(8, 'Forward Applications Agent', 'Internal', '2026-07-21 21:39:56', '2026-09-19 13:34:17', 'upcoming', NULL, NULL, '2025-11-14 16:48:10'),
-(9, 'Central Factors Designer', 'Global', '2026-01-01 01:13:25', '2025-11-15 08:04:33', 'upcoming', NULL, 1, '2025-11-14 16:50:53');
+-- =================================
+-- 1️⃣ USERS
+-- =================================
+INSERT INTO users (username, name, email, password, avatar_url, role, is_banned) VALUES
+('admin_john', 'John Mathew', 'john.admin@example.com', 'password123', 'https://i.pravatar.cc/150?img=1', 'admin', 0),
+('arjun_k', 'Arjun Kumar', 'arjun.k@example.com', 'password123', 'https://i.pravatar.cc/150?img=2', 'voter', 0),
+('riya_s', 'Riya Sharma', 'riya.s@example.com', 'password123', 'https://i.pravatar.cc/150?img=3', 'voter', 0),
+('devansh_p', 'Devansh Patel', 'devansh.p@example.com', 'password123', 'https://i.pravatar.cc/150?img=4', 'voter', 1),
+('meera_t', 'Meera Thomas', 'meera.t@example.com', 'password123', 'https://i.pravatar.cc/150?img=5', 'voter', 0),
+('rahul_m', 'Rahul Mehta', 'rahul.m@example.com', 'password123', 'https://i.pravatar.cc/150?img=6', 'voter', 0),
+('isha_v', 'Isha Verma', 'isha.v@example.com', 'password123', 'https://i.pravatar.cc/150?img=7', 'voter', 0),
+('vivek_d', 'Vivek Dutta', 'vivek.d@example.com', 'password123', 'https://i.pravatar.cc/150?img=8', 'voter', 0);
 
 
-INSERT INTO candidates 
-(candidate_id, election_id, name, party, avatar_url, votes, vote_share) 
-VALUES
-(1, 1, 'Diane Zulauf', 'Frozen', 'http://placeimg.com/640/480', 0, 0.00),
-(2, 1, 'Francis Harber', 'Frozen', 'http://placeimg.com/640/480', 0, 0.00),
-(3, 1, 'Amy Kub', 'Rubber', 'http://placeimg.com/640/480', 0, 0.00),
-(4, 1, 'Stacy Reynolds', 'Rubber', 'http://placeimg.com/640/480', 0, 0.00),
-(5, 3, 'Mr. Ron Marks', 'Fresh', 'http://placeimg.com/640/480', 0, 0.00),
-(6, 3, 'Greg Wolf', 'Fresh', 'http://placeimg.com/640/480', 0, 0.00),
-(7, 5, 'Carlos Metz', 'Metal', 'http://placeimg.com/640/480', 0, 0.00),
-(8, 5, 'Kelly Crist', 'Wooden', 'http://placeimg.com/640/480', 0, 0.00),
-(9, 4, 'Ms. Connie Wilkinson', 'Soft', 'http://placeimg.com/640/480', 0, 0.00),
-(11, 4, 'Florence Kemmer', 'Fresh', 'http://placeimg.com/640/480', 0, 0.00);
+-- =================================
+-- 2️⃣ ELECTIONS (created_by → admin user_id = 1)
+-- =================================
+INSERT INTO elections (title, description, start_time, end_time, status, created_by) VALUES
+('College President Election 2025',
+ 'Main election for Student Government President.',
+ '2025-01-12 09:00:00', '2025-01-12 17:00:00', 'result_declared', 1),
+
+('Tech Club Coordinator Election',
+ 'Election for selecting Tech Club coordinator.',
+ '2025-05-01 10:00:00', '2025-05-01 16:00:00', 'active', 1),
+
+('Sports Captain Election',
+ 'Election for choosing the Sports Captain.',
+ '2025-12-10 09:00:00', '2025-12-10 17:00:00', 'upcoming', 1);
 
 
-INSERT INTO bans (
-    user_id,
-    election_id,
-    reason,
-    banned_by,
-    ban_type,
-    banned_at
-) VALUES (
-    1,
-    NULL,
-    NULL,
-    1,
-    'permanent',
-    '2025-11-13 15:41:24'
-);
+-- =================================
+-- 3️⃣ CANDIDATES
+-- =================================
+INSERT INTO candidates (election_id, username, party) VALUES
+-- Election 1
+(1, 'arjun_k', 'United Students Front'),
+(1, 'riya_s', 'Youth Alliance'),
+(1, 'devansh_p', 'Independent'),
 
-INSERT INTO votes
-(vote_id, election_id, user_id, candidate_id, timestamp)
-VALUES
-(2, 1, 2, 1, '2025-11-14 18:17:58');
+-- Election 2
+(2, 'meera_t', 'Tech Visionaries'),
+(2, 'rahul_m', 'Code Innovators'),
+
+-- Election 3
+(3, 'isha_v', 'Athlete Squad'),
+(3, 'vivek_d', 'Sports United');
+
+
+-- =================================
+-- 4️⃣ WINNER FOR ELECTION 1
+-- (Assuming candidate_id 2 = riya_s)
+-- =================================
+UPDATE elections
+SET winner_candidate_id = 2
+WHERE election_id = 1;
+
+
+-- =================================
+-- 5️⃣ VOTES
+-- =================================
+INSERT INTO votes (election_id, username, candidate_id) VALUES
+-- Election 1 (result_declared)
+(1, 'arjun_k', 1),
+(1, 'riya_s', 2),
+(1, 'meera_t', 2),
+(1, 'rahul_m', 1),
+(1, 'isha_v', 2),
+
+-- Election 2 (active)
+(2, 'arjun_k', 4),
+(2, 'riya_s', 5);
+
+
+-- =================================
+-- 6️⃣ BANS
+-- =================================
+INSERT INTO bans (username, election_id, reason, banned_by, ban_type) VALUES
+('vivek_d', 2, 'Misconduct during Tech Club campaigning', 'admin_john', 'election'),
+('devansh_p', NULL, 'Permanent violation of behavioral policies', 'admin_john', 'permanent');
