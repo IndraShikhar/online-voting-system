@@ -1,66 +1,81 @@
-USE voting_system;
+USE voting_system; 
 
--- ==============================
--- SEED DATA FOR SMARTVOTE
--- ==============================
-
+-- =================================
 -- 1️⃣ USERS
-INSERT INTO users (username, name, email, password, role) VALUES
-('admin', 'Admin', 'admin@example.com', 'password123', 'admin'),
-('voter1', 'Voter One', 'voter1@example.com', 'password123', 'voter'),
-('voter2', 'Voter Two', 'voter2@example.com', 'password123', 'voter'),
-('voter3', 'Voter Three', 'voter3@example.com', 'password123', 'voter'),
-('voter4', 'Voter Four', 'voter4@example.com', 'password123', 'voter');
+-- =================================
+INSERT INTO users (username, name, email, password, avatar_url, role) VALUES
+('admin_john', 'John Mathew', 'john.admin@example.com', 'hashedpass1', 'https://avatars.example.com/john.png', 'admin'),
+('arjun_k', 'Arjun Kumar', 'arjun.k@example.com', 'hashedpass2', 'https://avatars.example.com/arjun.png', 'voter'),
+('riya_s', 'Riya Sharma', 'riya.s@example.com', 'hashedpass3', 'https://avatars.example.com/riya.png', 'voter'),
+('devansh_p', 'Devansh Patel', 'devansh.p@example.com', 'hashedpass4', 'https://avatars.example.com/devansh.png', 'voter'),
+('meera_t', 'Meera Thomas', 'meera.t@example.com', 'hashedpass5', 'https://avatars.example.com/meera.png', 'voter'),
+('rahul_m', 'Rahul Mehta', 'rahul.m@example.com', 'hashedpass6', 'https://avatars.example.com/rahul.png', 'voter'),
+('isha_v', 'Isha Verma', 'isha.v@example.com', 'hashedpass7', 'https://avatars.example.com/isha.png', 'voter'),
+('vivek_d', 'Vivek Dutta', 'vivek.d@example.com', 'hashedpass8', 'https://avatars.example.com/vivek.png', 'voter');
 
 
+-- =================================
 -- 2️⃣ ELECTIONS
+-- =================================
+-- created_by MUST be user_id (INT) → admin_john = user_id 1
 INSERT INTO elections (title, description, start_time, end_time, status, created_by) VALUES
-('NITM President Election 2025', 'Election for college student body president.',
- '2025-01-01 09:00:00', '2025-01-01 17:00:00', 'ended', 1),
+('College President Election 2025',
+ 'Annual election for the Student Government President.',
+ '2025-01-12 09:00:00', '2025-01-12 17:00:00', 'result_declared', 1),
 
-('Tech Club Lead Election', 'Election for NITM Tech Club Coordinator.',
- '2025-12-01 10:00:00', '2025-12-01 16:00:00', 'active', 1),
+('Tech Club Coordinator Election',
+ 'Election to choose the coordinator of the Technical Club.',
+ '2025-05-01 10:00:00', '2025-05-01 16:00:00', 'active', 1),
 
-('Sports Secretary Election', 'Election for sports council secretary.',
- '2025-12-20 09:00:00', '2025-12-20 17:00:00', 'upcoming', 1);
+('Sports Captain Election',
+ 'Election for selecting Sports Captain for the college.',
+ '2025-12-10 09:00:00', '2025-12-10 17:00:00', 'upcoming', 1);
 
 
+-- =================================
 -- 3️⃣ CANDIDATES
-INSERT INTO candidates (election_id, name, party, avatar_url) VALUES
--- Election 1 candidates
-(1, 'Alice Sharma', 'Unity Party', 'https://example.com/a1.png'),
-(1, 'Bob Sen', 'Progressive Front', 'https://example.com/b1.png'),
-(1, 'Charlie Das', 'Independent', 'https://example.com/c1.png'),
+-- =================================
+INSERT INTO candidates (election_id, username, party) VALUES
+-- Election 1
+(1, 'arjun_k', 'United Students Front'),
+(1, 'riya_s', 'Youth Alliance'),
+(1, 'devansh_p', 'Independent'),
 
--- Election 2 candidates
-(2, 'Derek Paul', 'Tech Innovators', 'https://example.com/d1.png'),
-(2, 'Eva Kapoor', 'Creators Guild', 'https://example.com/e1.png'),
+-- Election 2
+(2, 'meera_t', 'Tech Visionaries'),
+(2, 'rahul_m', 'Code Innovators'),
 
--- Election 3 candidates
-(3, 'Firoz Khan', 'Sports Warriors', 'https://example.com/f1.png'),
-(3, 'Gauri Mishra', 'Athlete First', 'https://example.com/g1.png');
+-- Election 3
+(3, 'isha_v', 'Athlete Squad'),
+(3, 'vivek_d', 'Sports United');
 
 
--- 4️⃣ UPDATE WINNER FOR FINISHED ELECTION (ELECTION 1)
+-- =================================
+-- 4️⃣ WINNER FOR COMPLETED ELECTION (Election 1)
 UPDATE elections
-SET winner_candidate_id = 1, status = 'result_declared'
+SET winner_candidate_id = 2   -- candidate_id 2 (riya_s)
 WHERE election_id = 1;
 
 
+-- =================================
 -- 5️⃣ VOTES
-INSERT INTO votes (election_id, user_id, candidate_id) VALUES
--- Election 1 (ended)
-(1, 2, 1),  -- voter1 → Alice
-(1, 3, 2),  -- voter2 → Bob
-(1, 4, 1),  -- voter3 → Alice (winner)
+-- =================================
+INSERT INTO votes (election_id, username, candidate_id) VALUES
+-- Election 1
+(1, 'arjun_k', 1),
+(1, 'devansh_p', 2),
+(1, 'meera_t', 2),
+(1, 'rahul_m', 1),
+(1, 'isha_v', 2),
 
--- Election 2 (active)
-(2, 2, 4),  -- voter1 → Derek
-(2, 3, 5);  -- voter2 → Eva
+-- Election 2
+(2, 'arjun_k', 4),
+(2, 'riya_s', 5);
 
 
+-- =================================
 -- 6️⃣ BANS
-INSERT INTO bans (user_id, election_id, reason, banned_by, ban_type) VALUES
-(5, 2, 'Misbehavior during campaigning', 1, 'election'),
-(3, NULL, 'Permanent misconduct', 1, 'permanent');
-
+-- =================================
+INSERT INTO bans (username, election_id, reason, banned_by, ban_type) VALUES
+('vivek_d', 2, 'Misconduct during tech club campaigning', 'admin_john', 'election'),
+('devansh_p', NULL, 'Repeated violation of code of conduct', 'admin_john', 'permanent');
