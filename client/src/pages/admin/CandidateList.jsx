@@ -259,7 +259,7 @@ export default function CandidateManagement() {
                   </div>
                 </div>
 
-                {/* Election Info */}
+                {/* Election Info
                 <div className="space-y-2 mb-4">
                   <div className="flex items-center text-sm text-neutral-300">
                     <Calendar className="w-4 h-4 mr-2 text-neutral-400" />
@@ -269,7 +269,7 @@ export default function CandidateManagement() {
                     <Clock className="w-4 h-4 mr-2 text-neutral-400" />
                     <span>End: {formatDate(election.end_time)}</span>
                   </div>
-                </div>
+                </div> */}
 
                 {/* Candidates Section */}
                 <div className="border-t border-neutral-700 pt-4">

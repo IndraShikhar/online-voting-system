@@ -214,7 +214,7 @@ const ResultsList = () => {
                     </div>
                 </div>
 
-                <div className="space-y-2 mb-4">
+                {/* <div className="space-y-2 mb-4">
                     <div className="flex items-center text-sm text-neutral-300">
                         <Calendar className="w-4 h-4 mr-2 text-neutral-400" />
                         <span>Start: {formatDate(election.start_time)}</span>
@@ -223,7 +223,7 @@ const ResultsList = () => {
                         <Clock className="w-4 h-4 mr-2 text-neutral-400" />
                         <span>End: {formatDate(election.end_time)}</span>
                     </div>
-                </div>
+                </div> */}
 
                 <div className="flex gap-3 pt-4 border-t border-neutral-700">
                     <Link

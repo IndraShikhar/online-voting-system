@@ -302,7 +302,7 @@ const AllElections = () => {
           </div>
 
           {/* Timeline */}
-          <div className="space-y-2 text-sm">
+          {/* <div className="space-y-2 text-sm">
             <div className="flex items-center text-neutral-300">
               <Calendar className="w-4 h-4 mr-2" />
               <span className="text-neutral-400">Start:</span>
@@ -313,7 +313,7 @@ const AllElections = () => {
               <span className="text-neutral-400">End:</span>
               <span className="ml-2">{formatDateTime(election.end_time)}</span>
             </div>
-          </div>
+          </div> */}
 
           {/* Action Buttons */}
           <div className="flex gap-2 mt-4 pt-4 border-t border-neutral-700">

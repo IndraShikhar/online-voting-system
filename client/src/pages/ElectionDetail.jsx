@@ -446,7 +446,7 @@ const ElectionDetail = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
+                  {/* <div>
                     <h4 className="font-medium text-white mb-3">Election Period</h4>
                     <div className="space-y-2">
                       <div className="flex items-center text-neutral-300">
@@ -460,7 +460,7 @@ const ElectionDetail = () => {
                         <span>{formatDateTime(election.end_time)}</span>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
 
                   <div>
                     <h4 className="font-medium text-white mb-3">Settings</h4>
@@ -638,43 +638,45 @@ const ElectionDetail = () => {
       </div>
 
       {/* Delete Confirmation Modal */}
-      {showDeleteModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-neutral-800 rounded-xl border border-neutral-700 p-6 max-w-md w-full">
-            <div className="flex items-center mb-4">
-              <div className="p-3 bg-red-600 rounded-lg mr-4">
-                <AlertTriangle className="w-6 h-6 text-white" />
+      {
+        showDeleteModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-neutral-800 rounded-xl border border-neutral-700 p-6 max-w-md w-full">
+              <div className="flex items-center mb-4">
+                <div className="p-3 bg-red-600 rounded-lg mr-4">
+                  <AlertTriangle className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-white">Delete Election</h3>
+                  <p className="text-neutral-400 text-sm">This action cannot be undone</p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-lg font-semibold text-white">Delete Election</h3>
-                <p className="text-neutral-400 text-sm">This action cannot be undone</p>
+
+              <p className="text-neutral-300 mb-6">
+                Are you sure you want to delete "<strong>{election.title}</strong>"?
+                This will permanently remove the election and all associated data including votes and results.
+              </p>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowDeleteModal(false)}
+                  className="flex-1 px-4 py-2 bg-neutral-700 hover:bg-neutral-600 text-white rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeleteElection}
+                  disabled={actionLoading}
+                  className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors disabled:opacity-50"
+                >
+                  {actionLoading ? 'Deleting...' : 'Delete Election'}
+                </button>
               </div>
-            </div>
-
-            <p className="text-neutral-300 mb-6">
-              Are you sure you want to delete "<strong>{election.title}</strong>"?
-              This will permanently remove the election and all associated data including votes and results.
-            </p>
-
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowDeleteModal(false)}
-                className="flex-1 px-4 py-2 bg-neutral-700 hover:bg-neutral-600 text-white rounded-lg transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDeleteElection}
-                disabled={actionLoading}
-                className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors disabled:opacity-50"
-              >
-                {actionLoading ? 'Deleting...' : 'Delete Election'}
-              </button>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )
+      }
+    </div >
   );
 };
 
