@@ -55,7 +55,7 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen p-6 bg-neutral-900 text-white">
+    <div className="min-h-screen overflow-auto p-6 bg-neutral-900 text-white">
       <div className="max-w-7xl mx-auto">
         <h2 className="text-3xl font-semibold mb-6">Dashboard Overview</h2>
 

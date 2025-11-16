@@ -10,4 +10,5 @@ voteRouter.post('/cast', voteController.castVote);
 voteRouter.get('/status/:electionId', voteController.hasUserVoted);
 voteRouter.get('/results/:electionId', voteController.getCurrentResult);
 voteRouter.get('/count/:electionId', voteController.totalVotesForAllCandidates);
+
 export default voteRouter;

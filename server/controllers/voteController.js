@@ -5,12 +5,12 @@ const voteController = {
   castVote: catchAsync(async function (req, res) {
     // Cast a vote for a candidate (voter only)
     const { election_id, candidate_id } = req.body;
-    const user_id = req.user.user_id; // Assuming user is authenticated
+    const username = req.user.username; // Assuming user is authenticated
 
     // Check if user has already voted in this election
     const [votes] = await db.query(
-      'SELECT * FROM votes WHERE election_id = ? AND user_id = ?',
-      [election_id, user_id]
+      'SELECT * FROM votes WHERE election_id = ? AND username = ?',
+      [election_id, username]
     );
     if (votes.length > 0) {
       return res.status(400).json({
@@ -31,8 +31,8 @@ const voteController = {
     }
     // Insert vote into votes table
     await db.query(
-      'INSERT INTO votes (election_id, candidate_id, user_id) VALUES (?, ?, ?)',
-      [election_id, candidate_id, user_id]
+      'INSERT INTO votes (election_id, candidate_id, username) VALUES (?, ?, ?)',
+      [election_id, candidate_id, username]
     );
     // Update vote count for the candidate
     await db.query(
@@ -48,11 +48,11 @@ const voteController = {
   hasUserVoted: catchAsync(async function (req, res) {
     // Check if user has voted in this election
     const election_id = req.params.electionId;
-    const user_id = req.user.user_id;
+    const username = req.user.username;
 
     const [votes] = await db.query(
-      'SELECT * FROM votes WHERE election_id = ? AND user_id = ?',
-      [election_id, user_id]
+      'SELECT * FROM votes WHERE election_id = ? AND username = ?',
+      [election_id, username]
     );
     res.status(200).json({
       status: 'success',

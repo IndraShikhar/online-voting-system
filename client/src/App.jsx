@@ -23,6 +23,7 @@ import ResultOverview from "./pages/ResultOverview";
 import VoterElectionDetail from "../src/pages/voter/ElectionDetail";
 import VoterElectionList from "../src/pages/voter/ElectionList";
 import VoterResultPage from "../src/pages/voter/ResultPage";
+import ResultsList from "../src/pages/voter/ResultsList";
 import VoteNow from "../src/pages/voter/VoteNow";
 import VoterDashboard from "../src/pages/voter/VoterDashboard";
 import VoterProfile from "../src/pages/voter/VoterProfile";
@@ -60,16 +61,16 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <AdminDashboard /> },
       { path: "dashboard", element: <AdminDashboard /> },
-      { path: "elections", element: <AllElections/> },
-      { path: "elections/create", element: <CreateElection/> },
+      { path: "elections", element: <AllElections /> },
+      { path: "elections/create", element: <CreateElection /> },
       { path: "elections/:id", element: <ElectionDetail /> },
       { path: "elections/:id/edit", element: <EditElection /> },
       { path: "candidates", element: <CandidateList /> },
       { path: "candidates/add", element: <AddCandidate /> },
-      { path: "voters", element: <Voters/> },
-      { path: "results", element: <Results/> },
+      { path: "voters", element: <Voters /> },
+      { path: "results", element: <Results /> },
       { path: "profile", element: <AdminProfile /> },
-      { path: "profile/edit", element: <EditProfile/> },
+      { path: "profile/edit", element: <EditProfile /> },
     ],
   },
 
@@ -88,6 +89,7 @@ const router = createBrowserRouter([
       { path: "elections", element: <VoterElectionList /> },
       { path: "elections/:id", element: <VoterElectionDetail /> },
       { path: "vote/:id", element: <VoteNow /> },
+      { path: "results", element: <ResultsList /> },
       { path: "results/:id", element: <VoterResultPage /> },
       { path: "profile", element: <VoterProfile /> },
     ],

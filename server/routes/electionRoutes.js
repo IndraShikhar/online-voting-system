@@ -7,6 +7,14 @@ electionRouter.use(authMiddleware.protect);
 
 electionRouter.get('/', electionController.getAllElections);
 electionRouter.get('/:id', electionController.getDetailOfElection);
+electionRouter.get(
+  '/results/:electionId',
+  electionController.getElectionResults
+);
+electionRouter.get(
+  '/:electionId/candidates',
+  electionController.getElectionCandidates
+);
 
 electionRouter.use(authMiddleware.restrictTo('admin'));
 

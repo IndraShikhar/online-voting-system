@@ -13,7 +13,7 @@ export default function LoginPage() {
     }
   }, [user, navigate]);
   return (
-    <div className="dark min-h-screen w-full grid grid-cols-1 lg:grid-cols-2">
+    <div className="dark min-h-screen overflow-auto w-full grid grid-cols-1 lg:grid-cols-2">
 
       {/* LEFT COOL SECTION */}
       <div className="relative hidden lg:flex items-center justify-center bg-gradient-to-br 

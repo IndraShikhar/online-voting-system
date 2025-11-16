@@ -13,5 +13,5 @@ export default function LogoutPage() {
         })();
     }, [logout, navigate]);
 
-    return <div className="min-h-screen flex items-center justify-center">Signing out...</div>;
+    return <div className="min-h-screen overflow-auto flex items-center justify-center">Signing out...</div>;
 }
