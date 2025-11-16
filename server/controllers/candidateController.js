@@ -2,7 +2,6 @@ import db from './../utils/db.js';
 import catchAsync from '../utils/catchAsync.js';
 
 const candidateController = {
-
   // ==============================
   // 1. LIST ALL CANDIDATES
   // ==============================
@@ -96,7 +95,7 @@ const candidateController = {
       'SELECT * FROM candidates WHERE election_id = ? AND username = ?',
       [election_id, username]
     );
-    
+
     if (existing.length > 0) {
       return res.status(400).json({
         status: 'fail',
@@ -116,10 +115,22 @@ const candidateController = {
       ]
     );
 
+    const [candidate] = await db
+      .query(
+        `SELECT c.*, u.name, u.avatar_url 
+       FROM candidates c
+       JOIN users u ON c.username = u.username
+       WHERE candidate_id = ?`,
+        [result.insertId]
+      )
+      .then((results) => results[0]);
+
     res.status(201).json({
       status: 'success',
       message: 'Candidate added successfully',
-      candidate_id: result.insertId,
+      data: {
+        candidate,
+      },
     });
   }),
 

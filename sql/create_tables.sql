@@ -9,6 +9,7 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL,
     avatar_url VARCHAR(1000),
     role ENUM('voter', 'admin') DEFAULT 'voter',
+    is_banned TINYINT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

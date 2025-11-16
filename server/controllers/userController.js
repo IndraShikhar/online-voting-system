@@ -152,6 +152,11 @@ const userController = {
       [username, banned_by, election_id, reason, ban_type]
     );
 
+    // Update is_banned flag in users table
+    await db.query('UPDATE users SET is_banned = 1 WHERE username = ?', [
+      username,
+    ]);
+
     res.status(200).json({
       status: 'success',
       data: {
@@ -169,6 +174,10 @@ const userController = {
 
     // Delete from bans
     await db.query('DELETE FROM bans WHERE user_id = ?', [userID]);
+
+    await db.query('UPDATE users SET is_banned = 0 WHERE username = ?', [
+      user.username,
+    ]);
 
     const [user] = await db
       .query('SELECT username FROM users WHERE user_id = ?', [userID])
