@@ -7,7 +7,7 @@ INSERT INTO users (username, name, email, password, avatar_url, role, is_banned)
 ('admin_john', 'John Mathew', 'john.admin@example.com', 'password123', 'https://i.pravatar.cc/150?img=1', 'admin', 0),
 ('arjun_k', 'Arjun Kumar', 'arjun.k@example.com', 'password123', 'https://i.pravatar.cc/150?img=2', 'voter', 0),
 ('riya_s', 'Riya Sharma', 'riya.s@example.com', 'password123', 'https://i.pravatar.cc/150?img=3', 'voter', 0),
-('devansh_p', 'Devansh Patel', 'devansh.p@example.com', 'password123', 'https://i.pravatar.cc/150?img=4', 'voter', 1), -- permanently banned example
+('devansh_p', 'Devansh Patel', 'devansh.p@example.com', 'password123', 'https://i.pravatar.cc/150?img=4', 'voter', 1),
 ('meera_t', 'Meera Thomas', 'meera.t@example.com', 'password123', 'https://i.pravatar.cc/150?img=5', 'voter', 0),
 ('rahul_m', 'Rahul Mehta', 'rahul.m@example.com', 'password123', 'https://i.pravatar.cc/150?img=6', 'voter', 0),
 ('isha_v', 'Isha Verma', 'isha.v@example.com', 'password123', 'https://i.pravatar.cc/150?img=7', 'voter', 0),

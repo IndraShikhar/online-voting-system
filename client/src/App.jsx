@@ -36,6 +36,8 @@ import LoginForm from "./components/LoginForm";
 import EditProfile from "./pages/admin/EditProfile";
 import AllElections from "./pages/admin/AllElections";
 import ProtectedRoute from "./auth/ProtectedRoute";
+import Voters from "./pages/admin/Voter";
+import Results from "./pages/admin/result";
 
 const router = createBrowserRouter([
 
@@ -59,13 +61,13 @@ const router = createBrowserRouter([
       { index: true, element: <AdminDashboard /> },
       { path: "dashboard", element: <AdminDashboard /> },
       { path: "elections", element: <AllElections/> },
-      { path: "elections/create", element: <CreateElection /> },
+      { path: "elections/create", element: <CreateElection/> },
       { path: "elections/:id", element: <ElectionDetail /> },
       { path: "elections/:id/edit", element: <EditElection /> },
       { path: "candidates", element: <CandidateList /> },
       { path: "candidates/add", element: <AddCandidate /> },
-      { path: "voters", element: <VoterList /> },
-      { path: "results", element: <ResultOverview /> },
+      { path: "voters", element: <Voters/> },
+      { path: "results", element: <Results/> },
       { path: "profile", element: <AdminProfile /> },
       { path: "profile/edit", element: <EditProfile/> },
     ],

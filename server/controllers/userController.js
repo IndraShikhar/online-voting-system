@@ -139,11 +139,22 @@ const userController = {
   // 6. BLOCK USER
   // ==============================
   blockUser: catchAsync(async (req, res, next) => {
-    const username = req.params.username; // updated
+      const userId = req.params.userId; // updated
     const banned_by = req.user.username; // updated
-    const election_id = req.body.election_id || null;
-    const reason = req.body.reason || null;
+    const election_id = req.body?.election_id || null;
+    const reason = req.body?.reason || null;
     const ban_type = election_id ? 'election' : 'permanent';
+
+    const [user] = await db.query(
+      'SELECT username FROM users WHERE user_id = ?',
+      [userId]
+    ).then((results) => results[0]);
+
+    if (!user) {
+      return next(new AppError('User not found', 404));
+    }
+
+    const username = user.username;
 
     // Insert into bans
     await db.query(
@@ -202,6 +213,7 @@ const userController = {
       .then((results) => results[0]);
 
     const username = user.username;
+    console.log(user)
     // Delete from users
     await db.query('DELETE FROM users WHERE user_id = ?', [userID]);
 

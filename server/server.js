@@ -42,7 +42,7 @@ const allowedOrigins = process.env.CLIENT_URL
 const corsOptions = {
   origin: function (origin, callback) {
     // allow requests with no origin (like mobile apps, curl, server-to-server)
-    if (!origin) return callback(null, true);
+    if(!origin) return callback(null, true);
     if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {

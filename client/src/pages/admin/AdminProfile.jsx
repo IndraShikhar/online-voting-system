@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 export default function AdminProfile() {
   return (
-    <div className="max-w-3xl bg-white p-8 rounded-lg shadow m-5">
+    <div className="max-w-3xl text-black bg-white p-8 rounded-lg shadow m-5">
       <h2 className="text-2xl font-semibold mb-8">Admin Profile</h2>
 
       <div className="flex flex-col md:flex-row items-start md:items-center gap-10">

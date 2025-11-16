@@ -14,7 +14,7 @@ userRouter.use(authMiddleware.protect);
 userRouter.get('/profile', userController.getUserProfile);
 userRouter.put(
   '/profile',
-  upload.single('avatar'), // 'avatar' is the key you send in Postman
+  upload.single('avatar'), 
   userController.updateUserProfile
 );
 

@@ -44,7 +44,7 @@ export default function EditProfile() {
   }
 
   return (
-    <div className="max-w-3xl bg-white p-8 rounded-lg shadow m-5">
+    <div className="max-w-3xl bg-white text-black p-8 rounded-lg shadow m-5">
       <h2 className="text-2xl font-semibold mb-8">Edit Profile</h2>
 
       <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-10">

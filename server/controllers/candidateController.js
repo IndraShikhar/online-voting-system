@@ -68,7 +68,7 @@ const candidateController = {
   // 4. ADD NEW CANDIDATE
   // ==============================
   addNewCandidate: catchAsync(async function (req, res) {
-    const { election_id, username, party, votes, vote_share } = req.body;
+    const {election_id, username, party, votes, vote_share} = req.body;
 
     if (!election_id || !username || !party) {
       return res.status(400).json({
