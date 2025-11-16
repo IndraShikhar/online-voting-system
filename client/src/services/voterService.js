@@ -4,7 +4,10 @@ const voterService = {
   // Get voter dashboard stats
   async getVoterStats() {
     try {
-      const { data } = await api.get('/votes/my-stats');
+      const {
+        data: { data },
+      } = await api.get('/votes/my-stats');
+      console.log(data);
       return data;
     } catch (error) {
       console.error('Failed to load voter stats:', error);

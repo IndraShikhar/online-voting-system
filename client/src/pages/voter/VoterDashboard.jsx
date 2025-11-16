@@ -28,7 +28,7 @@ const VoterDashboard = () => {
       ]);
 
       setStats(statsData);
-      setRecentElections(electionsData.slice(0, 5)); // Show 5 most recent
+      setRecentElections(electionsData.slice(0, 3)); // Show 5 most recent
     } catch (error) {
       console.error('Failed to load dashboard data:', error);
     } finally {
@@ -63,14 +63,12 @@ const VoterDashboard = () => {
   };
 
   const getElectionStatus = (election) => {
-    const now = new Date();
-    const startTime = new Date(election.start_time);
-    const endTime = new Date(election.end_time);
-
-    if (now < startTime) return { status: 'upcoming', color: 'yellow' };
-    if (now > endTime) return { status: 'ended', color: 'gray' };
-    return { status: 'active', color: 'green' };
-  };
+    const { status } = election;
+    return {
+      status,
+      color: status === 'active' ? 'green' : status === 'upcoming' ? 'yellow' : 'gray'
+    };
+  }
 
   if (loading) {
     return (

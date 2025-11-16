@@ -112,6 +112,53 @@ const voteController = {
       data: results,
     });
   }),
+
+  getUserVotingStats: catchAsync(async function (req, res) {
+    // Get voting statistics for the authenticated user
+
+    // totalElections
+    //     votedElections
+    //     upcomingElections
+    //     completedElections
+
+    const username = req.user.username;
+    const [totalElectionsResult] = await db.query(
+      'SELECT COUNT(*) AS totalElections FROM elections'
+    );
+    const [votedElectionsResult] = await db.query(
+      'SELECT COUNT(*) AS votedElections FROM votes WHERE username = ?',
+      [username]
+    );
+    const [upcomingElectionsResult] = await db.query(
+      'SELECT COUNT(*) AS upcomingElections FROM elections WHERE status = "upcoming" OR status = "in_progress"'
+    );
+    const [completedElectionsResult] = await db.query(
+      'SELECT COUNT(*) AS completedElections FROM elections WHERE status = "result_declared"'
+    );
+    res.status(200).json({
+      status: 'success',
+      data: {
+        totalElections: totalElectionsResult[0].totalElections,
+        votedElections: votedElectionsResult[0].votedElections,
+        upcomingElections: upcomingElectionsResult[0].upcomingElections,
+        completedElections: completedElectionsResult[0].completedElections,
+      },
+    });
+  }),
+
+  getVoterTurnout: catchAsync(async function (req, res) {
+    // Calculate total votes across all elections
+    const [totalVotesResult] = await db.query(
+      'SELECT COUNT(*) AS totalVotes FROM votes'
+    );
+    const totalVoterTurnout = totalVotesResult[0].totalVotes; // / totalVotersResult[0].totalVoters) * 100;
+    res.status(200).json({
+      status: 'success',
+      data: {
+        totalVoterTurnout,
+      },
+    });
+  }),
 };
 
 export default voteController;
