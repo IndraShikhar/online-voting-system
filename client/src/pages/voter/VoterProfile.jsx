@@ -1,22 +1,46 @@
-import { useEffect, useState } from 'react';
-import { User, Mail, Calendar, Edit3, Save, X, CheckCircle } from 'lucide-react';
+// VoterProfile.jsx   (pure JavaScript – keep the file as .jsx)
+import { useEffect, useState, useRef } from 'react';
+import {
+  User, Mail, Calendar, Edit3, Save, X, CheckCircle, Pencil, Shield, Key
+} from 'lucide-react';
 import { useAuth } from '../../auth/AuthContext';
 import authService from '../../services/authService';
 import voterService from '../../services/voterService';
+import axios from '../../api/api.js';               // <-- your axios instance
+
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const VoterProfile = () => {
   const { user, login } = useAuth();
+  const fileInputRef = useRef(null);
+
   const [profile, setProfile] = useState({
     name: '',
     email: '',
-    username: ''
+    username: '',
+    avatar_url: '',
   });
+  const [originalProfile, setOriginalProfile] = useState({});
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
+  // ---- image upload states ----
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+
+  /* --------------------------------------------------------------------- */
+  /*  Load profile                                                         */
+  /* --------------------------------------------------------------------- */
   useEffect(() => {
     loadProfile();
   }, []);
@@ -26,19 +50,25 @@ const VoterProfile = () => {
     try {
       const { data } = await authService.getProfile();
       const userData = data.user;
-      setProfile({
+      const profileData = {
         name: userData.name || '',
         email: userData.email || '',
-        username: userData.username || ''
-      });
-    } catch (error) {
-      console.error('Failed to load profile:', error);
+        username: userData.username || '',
+        avatar_url: userData.avatar_url || '',
+      };
+      setProfile(profileData);
+      setOriginalProfile(profileData);
+    } catch (err) {
+      console.error('Failed to load profile:', err);
       setError('Failed to load profile data');
     } finally {
       setLoading(false);
     }
   };
 
+  /* --------------------------------------------------------------------- */
+  /*  Save name / email / username                                         */
+  /* --------------------------------------------------------------------- */
   const handleSave = async () => {
     setSaving(true);
     setError('');
@@ -46,43 +76,108 @@ const VoterProfile = () => {
 
     try {
       const { data } = await voterService.updateProfile(profile);
-
-      // Update auth context with new data
       const updatedUser = { ...user, name: data.user.name };
       login(updatedUser);
 
+      setOriginalProfile(profile);
       setMessage('Profile updated successfully!');
       setIsEditing(false);
-
-      // Clear message after 3 seconds
       setTimeout(() => setMessage(''), 3000);
-    } catch (error) {
-      console.error('Failed to update profile:', error);
-      setError(error.response?.data?.message || 'Failed to update profile');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to update profile');
     } finally {
       setSaving(false);
     }
   };
 
   const handleCancel = () => {
+    setProfile(originalProfile);
     setIsEditing(false);
     setError('');
     setMessage('');
-    // Reset form to original values
-    loadProfile();
   };
 
   const handleChange = (field, value) => {
     setProfile(prev => ({ ...prev, [field]: value }));
   };
 
+  /* --------------------------------------------------------------------- */
+  /*  PROFILE PICTURE UPLOAD – MATCHES YOUR BACKEND                        */
+  /* --------------------------------------------------------------------- */
+
+  const openFilePicker = () => fileInputRef.current?.click();
+
+  const handleFileSelect = file => {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setError('Please select a valid image file');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Image must be smaller than 5 MB');
+      return;
+    }
+    setSelectedFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
+    setError('');
+  };
+
+  const uploadAvatar = async () => {
+    if (!selectedFile) return;
+
+    setUploading(true);
+    setError('');
+    setMessage('');
+
+    const form = new FormData();
+    // ---- these fields are read by your controller ----
+    form.append('avatar', selectedFile);      // <-- Multer field name
+    if (profile.name) form.append('name', profile.name);
+    if (profile.email) form.append('email', profile.email);
+    // (username is not editable on your route – you can add it if you want)
+
+    try {
+      // ---- YOUR EXACT ROUTE ----
+      const { data } = await axios.put('/users/profile', form, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      console.log(data);
+
+      // ---- your API returns: data.user.avatar_url ----
+      const newAvatarUrl = data.data.user.avatar_url;
+
+      const updated = { ...profile, avatar_url: newAvatarUrl };
+      setProfile(updated);
+      setOriginalProfile(updated);
+      login({ ...user, avatar_url: newAvatarUrl });
+
+      setMessage('Profile picture updated!');
+      setTimeout(() => setMessage(''), 3000);
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.message || 'Failed to upload image');
+    } finally {
+      setUploading(false);
+      setSelectedFile(null);
+      setPreviewUrl(null);
+    }
+  };
+
+  const handleChangePicture = () => {
+    if (selectedFile) uploadAvatar();
+    else openFilePicker();
+  };
+
+  /* --------------------------------------------------------------------- */
+  /*  Render                                                               */
+  /* --------------------------------------------------------------------- */
   if (loading) {
     return (
-      <div className="min-h-screen overflow-auto bg-neutral-900 p-6">
-        <div className="max-w-2xl mx-auto">
-          <div className="animate-pulse">
-            <div className="h-8 bg-neutral-700 rounded w-48 mb-8"></div>
-            <div className="bg-neutral-700 rounded-xl h-96"></div>
+      <div className="min-h-screen bg-linear-to-br from-slate-900 via-neutral-900 to-slate-900 p-6">
+        <div className="max-w-3xl mx-auto">
+          <div className="animate-pulse space-y-6">
+            <div className="h-8 bg-neutral-700 rounded w-64"></div>
+            <div className="bg-neutral-800 rounded-2xl h-96 border border-neutral-700"></div>
           </div>
         </div>
       </div>
@@ -90,187 +185,226 @@ const VoterProfile = () => {
   }
 
   return (
-    <div className="min-h-screen overflow-auto bg-neutral-900 text-white p-6">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen bg-linear-to-br from-slate-900 via-neutral-900 to-slate-900 p-6">
+      <div className="max-w-3xl mx-auto space-y-6">
+
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Profile Settings</h1>
-          <p className="text-neutral-400">
-            Manage your account information and preferences
-          </p>
+        <div className="text-left">
+          <h1 className="text-4xl font-bold text-white mb-2">Profile Settings</h1>
+          <p className="text-neutral-400">Manage your voter account and personal information</p>
         </div>
 
         {/* Messages */}
         {message && (
-          <div className="mb-6 p-4 bg-green-800/20 border border-green-700 rounded-lg flex items-center">
-            <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-            <span className="text-green-400">{message}</span>
-          </div>
+          <Alert className="bg-green-900/20 border-green-700 text-green-400">
+            <CheckCircle className="h-4 w-4" />
+            <AlertDescription>{message}</AlertDescription>
+          </Alert>
         )}
-
         {error && (
-          <div className="mb-6 p-4 bg-red-800/20 border border-red-700 rounded-lg">
-            <span className="text-red-400">{error}</span>
-          </div>
+          <Alert className="bg-red-900/20 border-red-700 text-red-400">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
         )}
 
         {/* Profile Card */}
-        <div className="bg-neutral-800 rounded-xl border border-neutral-700">
-          {/* Card Header */}
-          <div className="p-6 border-b border-neutral-700">
+        <Card className="bg-neutral-800/50 backdrop-blur border-neutral-700 shadow-2xl">
+          <CardHeader className="border-b border-neutral-700 pb-6">
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                {/* {candidate.avatar_url ?
-                  (<div>
-                    <img src={candidate.avatar_url} alt={candidate.name} className="w-16 h-16 bg-linear-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shrink-0" />
-                  </div>)
-                  : */}
-                (<div className="w-16 h-16 bg-linear-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shrink-0">
-                  <User className="w-8 h-8 text-white" />
-                </div>)
-                {/* } */}
+              <div className="flex items-center gap-4">
+                {/* AVATAR WITH PREVIEW + EDIT */}
+                <div className="relative group">
+                  <Avatar className="h-20 w-20 ring-4 ring-neutral-700 shadow-xl">
+                    <AvatarImage src={previewUrl || profile.avatar_url} alt={profile.name} />
+                    <AvatarFallback className="bg-linear-to-br from-blue-500 to-purple-600 text-white text-xl font-bold">
+                      {profile.name?.[0]?.toUpperCase() || <User className="h-8 w-8" />}
+                    </AvatarFallback>
+                  </Avatar>
+
+                  <button
+                    onClick={handleChangePicture}
+                    disabled={uploading}
+                    className={`
+                      absolute inset-0 flex items-center justify-center rounded-full
+                      bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-200
+                      ${uploading ? 'cursor-not-allowed' : ''}
+                    `}
+                    title={selectedFile ? 'Upload image' : 'Change profile picture'}
+                  >
+                    {uploading ? (
+                      <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" />
+                    ) : selectedFile ? (
+                      <Save className="h-5 w-5 text-white" />
+                    ) : (
+                      <Pencil className="h-5 w-5 text-white" />
+                    )}
+                  </button>
+
+                  {previewUrl && !uploading && (
+                    <button
+                      onClick={e => {
+                        e.stopPropagation();
+                        setSelectedFile(null);
+                        setPreviewUrl(null);
+                      }}
+                      className="absolute -top-1 -right-1 bg-red-600 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                      title="Discard"
+                    >
+                      <X className="h-3 w-3 text-white" />
+                    </button>
+                  )}
+                </div>
+
                 <div>
-                  <h2 className="text-xl font-semibold text-white">{profile.name || 'Voter'}</h2>
-                  <p className="text-neutral-400">@{profile.username}</p>
+                  <CardTitle className="text-2xl text-white">{profile.name || 'Voter'}</CardTitle>
+                  <CardDescription className="text-neutral-400 flex items-center gap-1">
+                    @{profile.username}
+                    <Badge variant="secondary" className="ml-2 text-xs bg-blue-900 text-blue-300">
+                      Verified
+                    </Badge>
+                  </CardDescription>
                 </div>
               </div>
 
-              {!isEditing ? (
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-                >
-                  <Edit3 className="w-4 h-4 mr-2" />
-                  Edit Profile
-                </button>
+              {/* Edit / Save buttons */}
+              <div className="flex gap-2">
+                {isEditing ? (
+                  <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleCancel}
+                      disabled={saving}
+                      className="border-neutral-600 text-neutral-300 hover:bg-neutral-700"
+                    >
+                      <X className="h-4 w-4 mr-1" />
+                      Cancel
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={handleSave}
+                      disabled={saving}
+                      className="bg-green-600 hover:bg-green-700"
+                    >
+                      <Save className="h-4 w-4 mr-1" />
+                      {saving ? 'Saving...' : 'Save'}
+                    </Button>
+                  </>
+                ) : (
+                  <Button
+                    size="sm"
+                    onClick={() => setIsEditing(true)}
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    <Edit3 className="h-4 w-4 mr-1" />
+                    Edit Profile
+                  </Button>
+                )}
+              </div>
+            </div>
+          </CardHeader>
+
+          <CardContent className="pt-6 space-y-6">
+            {/* Full Name */}
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-neutral-300">Full Name</Label>
+              {isEditing ? (
+                <Input
+                  id="name"
+                  value={profile.name}
+                  onChange={e => handleChange('name', e.target.value)}
+                  className="bg-neutral-700 border-neutral-600 text-white placeholder-neutral-400 focus:ring-blue-500"
+                  placeholder="Enter your full name"
+                />
               ) : (
-                <div className="flex space-x-2">
-                  <button
-                    onClick={handleCancel}
-                    className="flex items-center px-4 py-2 bg-neutral-600 hover:bg-neutral-700 text-white rounded-lg transition-colors"
-                    disabled={saving}
-                  >
-                    <X className="w-4 h-4 mr-2" />
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleSave}
-                    className="flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors disabled:opacity-50"
-                    disabled={saving}
-                  >
-                    <Save className="w-4 h-4 mr-2" />
-                    {saving ? 'Saving...' : 'Save Changes'}
-                  </button>
+                <div className="flex items-center gap-3 px-4 py-3 bg-neutral-700 rounded-lg">
+                  <User className="h-5 w-5 text-neutral-400" />
+                  <span className="text-white">{profile.name || 'Not provided'}</span>
                 </div>
               )}
             </div>
-          </div>
 
-          {/* Card Content */}
-          <div className="p-6">
-            <div className="space-y-6">
-              {/* Full Name */}
-              <div>
-                <label className="block text-sm font-medium text-neutral-300 mb-2">
-                  Full Name
-                </label>
-                {isEditing ? (
-                  <input
-                    type="text"
-                    value={profile.name}
-                    onChange={(e) => handleChange('name', e.target.value)}
-                    className="w-full px-4 py-3 bg-neutral-700 border border-neutral-600 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Enter your full name"
-                  />
-                ) : (
-                  <div className="flex items-center px-4 py-3 bg-neutral-700 rounded-lg">
-                    <User className="w-5 h-5 text-neutral-400 mr-3" />
-                    <span className="text-white">{profile.name || 'Not provided'}</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Username */}
-              <div>
-                <label className="block text-sm font-medium text-neutral-300 mb-2">
-                  Username
-                </label>
-                {isEditing ? (
-                  <input
-                    type="text"
-                    value={profile.username}
-                    onChange={(e) => handleChange('username', e.target.value)}
-                    className="w-full px-4 py-3 bg-neutral-700 border border-neutral-600 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Enter your username"
-                  />
-                ) : (
-                  <div className="flex items-center px-4 py-3 bg-neutral-700 rounded-lg">
-                    <span className="text-neutral-400 mr-3">@</span>
-                    <span className="text-white">{profile.username || 'Not provided'}</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Email */}
-              <div>
-                <label className="block text-sm font-medium text-neutral-300 mb-2">
-                  Email Address
-                </label>
-                {isEditing ? (
-                  <input
-                    type="email"
-                    value={profile.email}
-                    onChange={(e) => handleChange('email', e.target.value)}
-                    className="w-full px-4 py-3 bg-neutral-700 border border-neutral-600 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Enter your email address"
-                  />
-                ) : (
-                  <div className="flex items-center px-4 py-3 bg-neutral-700 rounded-lg">
-                    <Mail className="w-5 h-5 text-neutral-400 mr-3" />
-                    <span className="text-white">{profile.email || 'Not provided'}</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Role */}
-              <div>
-                <label className="block text-sm font-medium text-neutral-300 mb-2">
-                  Role
-                </label>
-                <div className="flex items-center px-4 py-3 bg-neutral-700 rounded-lg">
-                  <Calendar className="w-5 h-5 text-neutral-400 mr-3" />
-                  <span className="text-white capitalize">{user?.role || 'voter'}</span>
-                  <span className="ml-auto px-3 py-1 bg-blue-800 text-blue-300 rounded-full text-xs font-medium">
-                    Verified
-                  </span>
-                </div>
+            {/* Username – not editable on your route */}
+            <div className="space-y-2">
+              <Label className="text-neutral-300">Username</Label>
+              <div className="flex items-center gap-3 px-4 py-3 bg-neutral-700 rounded-lg">
+                <span className="text-neutral-400">@</span>
+                <span className="text-white">{profile.username || 'Not provided'}</span>
               </div>
             </div>
-          </div>
-        </div>
+
+            {/* Email */}
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-neutral-300">Email Address</Label>
+              {isEditing ? (
+                <Input
+                  id="email"
+                  type="email"
+                  value={profile.email}
+                  onChange={e => handleChange('email', e.target.value)}
+                  className="bg-neutral-700 border-neutral-600 text-white placeholder-neutral-400 focus:ring-blue-500"
+                  placeholder="Enter your email"
+                />
+              ) : (
+                <div className="flex items-center gap-3 px-4 py-3 bg-neutral-700 rounded-lg">
+                  <Mail className="h-5 w-5 text-neutral-400" />
+                  <span className="text-white">{profile.email || 'Not provided'}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Role */}
+            <div className="space-y-2">
+              <Label className="text-neutral-300">Role</Label>
+              <div className="flex items-center justify-between px-4 py-3 bg-neutral-700 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <Calendar className="h-5 w-5 text-neutral-400" />
+                  <span className="text-white capitalize">{user?.role || 'voter'}</span>
+                </div>
+                <Badge className="bg-emerald-900 text-emerald-300">Active</Badge>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Account Information */}
-        <div className="mt-8 bg-neutral-800 rounded-xl border border-neutral-700 p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Account Information</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <div className="text-sm text-neutral-400 mb-1">User ID</div>
-              <div className="text-white font-mono text-sm">{user?.id || 'N/A'}</div>
+        <Card className="bg-neutral-800/50 backdrop-blur border-neutral-700">
+          <CardHeader>
+            <CardTitle className="text-lg text-white flex items-center gap-2">
+              <Shield className="h-5 w-5 text-blue-400" />
+              Account Information
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div>
+                <p className="text-neutral-400">User ID</p>
+                <p className="text-white font-mono">{user?.id || 'N/A'}</p>
+              </div>
+              <div>
+                <p className="text-neutral-400">Account Type</p>
+                <p className="text-white">Voter Account</p>
+              </div>
             </div>
-            <div>
-              <div className="text-sm text-neutral-400 mb-1">Account Type</div>
-              <div className="text-white">Voter Account</div>
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
         {/* Security Note */}
-        <div className="mt-8 p-4 bg-yellow-900/20 border border-yellow-700 rounded-lg">
-          <h4 className="text-yellow-400 font-medium mb-2">Security Notice</h4>
-          <p className="text-yellow-200 text-sm">
-            To change your password or update security settings, please contact the system administrator.
-          </p>
-        </div>
+        <Alert className="bg-amber-900/20 border-amber-700 text-amber-300">
+          <Key className="h-4 w-4" />
+          <AlertDescription>
+            <strong>Security Notice:</strong> To change your password or update security settings, please contact the system administrator.
+          </AlertDescription>
+        </Alert>
+
+        {/* HIDDEN FILE INPUT */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={e => handleFileSelect(e.target.files?.[0])}
+        />
       </div>
     </div>
   );
