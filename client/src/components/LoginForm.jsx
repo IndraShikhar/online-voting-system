@@ -80,17 +80,6 @@ export default function LoginForm() {
                 <div
                     className="my-8 h-px w-full bg-linear-to-r from-transparent via-neutral-300 to-transparent dark:via-neutral-700" />
 
-                <div className="flex flex-col space-y-4">
-                    <button
-                        className="group/btn shadow-input relative flex h-10 w-full items-center justify-start space-x-2 rounded-md bg-zinc-800 px-4 font-medium text-white"
-                        type="submit">
-                        <IconBrandGoogle className="h-4 w-4 text-neutral-200" />
-                        <span className="text-sm text-neutral-200">
-                            Google
-                        </span>
-                        <BottomGradient />
-                    </button>
-                </div>
             </form>
             <p className="text-center text-sm text-muted-foreground mt-2">
                 Don't have an account?{" "}
