@@ -1,4 +1,5 @@
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 export default function EditProfile() {
 
@@ -20,6 +21,7 @@ export default function EditProfile() {
   function handlePhotoChange(e) {
     const file = e.target.files[0];
     if (!file) return;
+    toast.success('Photo selected');
 
     const url = URL.createObjectURL(file);
     setPreview(url);
@@ -30,7 +32,7 @@ export default function EditProfile() {
   function handleSubmit(e) {
     e.preventDefault();
     console.log("Saving profile...", form);
-
+    toast.success('Profile updated successfully');
     // Here you will do:
     // const formData = new FormData();
     // formData.append("photo", form.photo);

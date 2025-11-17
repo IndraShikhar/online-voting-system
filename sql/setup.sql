@@ -1,6 +1,8 @@
 SOURCE create_database.sql;
 USE voting_system;
 SOURCE create_tables.sql;
+USE voting_system;
+SOURCE dummy.sql;
 
 -- Command to execute this setup script:
 -- mysql -u root -p < setup.sql

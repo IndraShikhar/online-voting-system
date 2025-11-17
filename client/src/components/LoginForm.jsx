@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import authService from "../services/authService";
 import { useAuth } from "../auth/AuthContext";
+import toast from "react-hot-toast";
 
 export default function LoginForm() {
     const navigate = useNavigate();
@@ -25,6 +26,7 @@ export default function LoginForm() {
         e.preventDefault();
         setError("");
         setLoading(true);
+        toast.success('Logging in...');
         try {
             const data = await authService.login({ username, password });
             const user = data.data.user;
@@ -34,6 +36,7 @@ export default function LoginForm() {
             // redirect based on role
             if (user.role === 'admin') navigate('/admin/dashboard');
             else navigate('/voter/dashboard');
+            toast.success('Login successful!');
         } catch (err) {
             console.error(err);
             setError(err.response?.data?.message || err.message || 'Login failed');

@@ -5,7 +5,7 @@ import { toMySQLDate } from '../utils/utils.js';
 const electionController = {
   createNewElection: catchAsync(async (req, res) => {
     // Create a new election (admin only)
-    const { title, description} = req.body;
+    const { title, description } = req.body;
     const start_time = req.body.start_time || null;
     const end_time = req.body.end_time || null;
     const status = 'upcoming';
@@ -96,18 +96,18 @@ const electionController = {
     });
   }),
 
-    declareResults: catchAsync(async function (req, res) {
-      const electionId = req.params.id;
-  
-      // mark election as results declared
-      await db.query('UPDATE elections SET status = ? WHERE election_id = ?', [
-        'result_declared',
-        electionId,
-      ]);
-  
-      // aggregate votes per candidate, include candidates with zero votes, and pull candidate user name
-      const [candidates] = await db.query(
-        `SELECT c.candidate_id, c.username, c.party, IFNULL(v.votes, 0) AS votes, u.name
+  declareResults: catchAsync(async function (req, res) {
+    const electionId = req.params.id;
+
+    // mark election as results declared
+    await db.query('UPDATE elections SET status = ? WHERE election_id = ?', [
+      'result_declared',
+      electionId,
+    ]);
+
+    // aggregate votes per candidate, include candidates with zero votes, and pull candidate user name
+    const [candidates] = await db.query(
+      `SELECT c.candidate_id, c.username, c.party, IFNULL(v.votes, 0) AS votes, u.name
          FROM candidates c
          LEFT JOIN (
            SELECT candidate_id, COUNT(*) AS votes
@@ -118,52 +118,60 @@ const electionController = {
          LEFT JOIN users u ON c.username = u.username
          WHERE c.election_id = ?
          ORDER BY votes DESC, c.candidate_id ASC`,
-        [electionId, electionId]
-      );
-  
-      // total votes in this election
-      const totalVotes = candidates.reduce((sum, c) => sum + Number(c.votes || 0), 0);
-  
-      // update candidates.votes and candidates.vote_share according to aggregated counts
-      for (const c of candidates) {
-        const votes = Number(c.votes || 0);
-        const voteShare = totalVotes > 0 ? Number(((votes / totalVotes) * 100).toFixed(2)) : 0;
-        await db.query(
-          'UPDATE candidates SET votes = ?, vote_share = ? WHERE candidate_id = ?',
-          [votes, voteShare, c.candidate_id]
-        );
-        // attach computed vote_share to returned object (ensure numeric)
-        c.vote_share = voteShare;
-        c.votes = votes;
-      }
-  
-      // determine winner (null if no votes)
-      let winnerCandidateId = null;
-      if (candidates.length > 0 && totalVotes > 0 && Number(candidates[0].votes) > 0) {
-        winnerCandidateId = candidates[0].candidate_id;
-      }
-  
-      // update winner_candidate_id (can be null)
+      [electionId, electionId]
+    );
+
+    // total votes in this election
+    const totalVotes = candidates.reduce(
+      (sum, c) => sum + Number(c.votes || 0),
+      0
+    );
+
+    // update candidates.votes and candidates.vote_share according to aggregated counts
+    for (const c of candidates) {
+      const votes = Number(c.votes || 0);
+      const voteShare =
+        totalVotes > 0 ? Number(((votes / totalVotes) * 100).toFixed(2)) : 0;
       await db.query(
-        'UPDATE elections SET winner_candidate_id = ? WHERE election_id = ?',
-        [winnerCandidateId, electionId]
+        'UPDATE candidates SET votes = ?, vote_share = ? WHERE candidate_id = ?',
+        [votes, voteShare, c.candidate_id]
       );
-  
-      const [electionRows] = await db.query(
-        'SELECT * FROM elections WHERE election_id = ?',
-        [electionId]
-      );
-      const election = electionRows[0] || null;
-  
-      res.status(200).json({
-        status: 'success',
-        data: {
-          election,
-          candidates,
-          totalVotes,
-        },
-      });
-    }),
+      // attach computed vote_share to returned object (ensure numeric)
+      c.vote_share = voteShare;
+      c.votes = votes;
+    }
+
+    // determine winner (null if no votes)
+    let winnerCandidateId = null;
+    if (
+      candidates.length > 0 &&
+      totalVotes > 0 &&
+      Number(candidates[0].votes) > 0
+    ) {
+      winnerCandidateId = candidates[0].candidate_id;
+    }
+
+    // update winner_candidate_id (can be null)
+    await db.query(
+      'UPDATE elections SET winner_candidate_id = ? WHERE election_id = ?',
+      [winnerCandidateId, electionId]
+    );
+
+    const [electionRows] = await db.query(
+      'SELECT * FROM elections WHERE election_id = ?',
+      [electionId]
+    );
+    const election = electionRows[0] || null;
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        election,
+        candidates,
+        totalVotes,
+      },
+    });
+  }),
 
   deleteElection: catchAsync(async function (req, res) {
     // Delete an election (admin only)
@@ -174,6 +182,61 @@ const electionController = {
     res.status(204).json({
       status: 'success',
       data: null,
+    });
+  }),
+
+  getElectionResults: catchAsync(async function (req, res) {
+    const electionId = req.params.electionId;
+    const [electionRows] = await db.query(
+      'SELECT * FROM elections WHERE election_id = ?',
+      [electionId]
+    );
+    const election = electionRows[0] || null;
+    if (!election) {
+      return res.status(404).json({
+        status: 'fail',
+        message: 'Election not found',
+      });
+    }
+    const [candidates] = await db.query(
+      `SELECT c.candidate_id, c.username, c.party, c.votes, c.vote_share, u.name
+       FROM candidates c
+        LEFT JOIN users u ON c.username = u.username
+       WHERE c.election_id = ?
+       ORDER BY c.votes DESC, c.candidate_id ASC`,
+      [electionId]
+    );
+
+    // total votes in this election
+    const totalVotes = candidates.reduce(
+      (sum, c) => sum + Number(c.votes || 0),
+      0
+    );
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        election,
+        candidates,
+        totalVotes,
+      },
+    });
+  }),
+
+  getElectionCandidates: catchAsync(async function (req, res) {
+    const electionId = req.params.electionId;
+    const [candidates] = await db.query(
+      `SELECT c.candidate_id, c.username, c.party, c.votes, c.vote_share, u.name,u.avatar_url
+       FROM candidates c
+        LEFT JOIN users u ON c.username = u.username
+       WHERE c.election_id = ?
+       ORDER BY c.candidate_id ASC`,
+      [electionId]
+    );
+
+    res.status(200).json({
+      status: 'success',
+      data: candidates,
     });
   }),
 };
