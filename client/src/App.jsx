@@ -42,7 +42,7 @@ import Results from "./pages/admin/result";
 
 const router = createBrowserRouter([
 
-  { path: "/", element: <Home /> },
+  { index: true, element: <Login /> },
   { path: "/login", element: <Login /> },
   { path: "/logout", element: <Logout /> },
   { path: "/register", element: <Register /> },
