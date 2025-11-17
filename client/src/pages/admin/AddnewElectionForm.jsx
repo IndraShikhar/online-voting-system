@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import toast from "react-hot-toast";
 
 function DialogDemo() {
   const [form, setForm] = useState({
@@ -33,6 +34,7 @@ function DialogDemo() {
 
       console.log("Candidate added:", res.data);
       alert("Candidate added successfully!");
+      toast.success("Election added successfully!");
 
       // Clear form
       setForm({ title: "", description: "" });

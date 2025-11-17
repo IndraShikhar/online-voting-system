@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Vote, CheckCircle, ArrowLeft, User, AlertTriangle, Lock } from 'lucide-react';
 import voterService from '../../services/voterService';
+import toast from 'react-hot-toast';
 
 const VoteNow = () => {
   const { id } = useParams();
@@ -35,7 +36,7 @@ const VoteNow = () => {
       setElection(electionData);
       setCandidates(candidatesData);
       setHasVoted(votedStatus);
-
+      toast.success('Voting data loaded successfully');
       const status = electionData.status;
       if (status !== 'active') {
         setError('This election is not currently active for voting.');
@@ -54,12 +55,14 @@ const VoteNow = () => {
 
   const handleCandidateSelect = (candidate) => {
     if (!hasVoted && !error) {
+      toast.success(`Selected candidate: ${candidate.name}`);
       setSelectedCandidate(candidate);
     }
   };
 
   const handleVoteSubmit = () => {
     if (selectedCandidate) {
+      toast.success('Vote submitted successfully');
       setShowConfirmation(true);
     }
   };
@@ -70,7 +73,7 @@ const VoteNow = () => {
     setVoting(true);
     try {
       await voterService.castVote(election.election_id, selectedCandidate.candidate_id);
-
+      toast.success('Your vote has been cast successfully!');
       // Show success and redirect after a delay
       setTimeout(() => {
         navigate(`/voter/elections/${election.election_id}`, {

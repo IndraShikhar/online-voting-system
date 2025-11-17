@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import axios from '../../api/api.js';
 import AddnewCandidateForm from './AddnewCandidateForm.jsx';
+import toast from 'react-hot-toast';
 
 export default function CandidateManagement() {
   const [elections, setElections] = useState([]);
@@ -110,7 +111,7 @@ export default function CandidateManagement() {
 
     try {
       await axios.delete(`/candidates/delete/${candidate_id}`);
-
+      toast.success('Candidate removed successfully');
       setElections((prev) =>
         prev.map((ele) => ({
           ...ele,

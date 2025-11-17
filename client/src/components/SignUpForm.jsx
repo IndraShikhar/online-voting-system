@@ -10,6 +10,7 @@ import LogoIcon from "./ui/Logo/LogoIcon";
 import { Link, useNavigate } from "react-router-dom";
 import authService from "../services/authService";
 import { useAuth } from "../auth/AuthContext";
+import toast from "react-hot-toast";
 
 export default function SignupForm() {
   const navigate = useNavigate();
@@ -26,6 +27,7 @@ export default function SignupForm() {
     e.preventDefault();
     setError("");
     setLoading(true);
+    toast.success('Signing up...');
     try {
       const data = await authService.register({ username, name, email, password });
       const user = data.data.user;
@@ -33,6 +35,7 @@ export default function SignupForm() {
       login({ id: user.user_id, role: user.role, name: user.name, token });
       if (user.role === 'admin') navigate('/admin/dashboard');
       else navigate('/voter/dashboard');
+      toast.success('Registration successful!');
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.message || err.message || 'Registration failed');

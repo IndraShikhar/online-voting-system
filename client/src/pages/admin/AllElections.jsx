@@ -19,6 +19,7 @@ import {
   Settings
 } from 'lucide-react';
 import adminService from '../../services/adminService';
+import toast from 'react-hot-toast';
 
 const AllElections = () => {
   const [elections, setElections] = useState([]);
@@ -50,6 +51,7 @@ const AllElections = () => {
         election.vote_count = vote_count;
       }));
       const electionsData = response || [];
+      toast.success('Elections loaded successfully');
       setElections(electionsData);
     } catch (error) {
       console.error('Failed to load elections:', error);

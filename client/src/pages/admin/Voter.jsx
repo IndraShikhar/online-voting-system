@@ -24,6 +24,7 @@ import {
   X
 } from "lucide-react";
 import adminService from "../../services/adminService";
+import toast from "react-hot-toast";
 
 export default function Voters() {
   const [voters, setVoters] = useState([]);
@@ -62,7 +63,7 @@ export default function Voters() {
           return true;
         });
       }
-
+      toast.success('Voters filtered successfully');
       setFilteredVoters(filtered);
     };
 

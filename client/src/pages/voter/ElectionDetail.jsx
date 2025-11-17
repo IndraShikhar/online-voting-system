@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Calendar, Users, Vote, CheckCircle, Clock, ArrowLeft, User, Award } from 'lucide-react';
 import voterService from '../../services/voterService';
+import toast from 'react-hot-toast';
 
 const ElectionDetail = () => {
   const { id } = useParams();
@@ -28,7 +29,7 @@ const ElectionDetail = () => {
         voterService.getElectionCandidates(id),
         voterService.hasVoted(id)
       ]);
-
+      toast.success('Election details loaded successfully');
       setElection(electionData);
       setCandidates(candidatesData);
       setHasVoted(votedStatus);

@@ -11,6 +11,7 @@ import {
   Users
 } from 'lucide-react';
 import axios from '../../api/api.js';
+import toast, { Toaster } from 'react-hot-toast';
 
 export default function CreateElection() {
   const navigate = useNavigate();
@@ -90,8 +91,9 @@ export default function CreateElection() {
     setSuccess(false);
 
     try {
-      await axios.post('/elections', form);
+      await axios.post('/elections/create', form);
       setSuccess(true);
+      toast.success('Election created successfully!');
 
       // Navigate to elections list after 2 seconds
       setTimeout(() => {

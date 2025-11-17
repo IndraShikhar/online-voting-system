@@ -15,6 +15,7 @@ import {
     TrendingUp
 } from 'lucide-react';
 import adminService from '../../services/adminService';
+import toast from 'react-hot-toast';
 
 const ResultsList = () => {
     const [elections, setElections] = useState([]);
@@ -85,7 +86,7 @@ const ResultsList = () => {
                     }
                 })
             );
-
+           toast.success('Elections loaded successfully');
             setElections(electionsWithResults);
         } catch (error) {
             console.error('Failed to load elections:', error);

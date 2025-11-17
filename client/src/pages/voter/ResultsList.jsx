@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Search, Calendar, BarChart, Trophy, Users, TrendingUp, Eye } from 'lucide-react';
 import voterService from '../../services/voterService';
 import api from "../../api/api.js";
+import toast from 'react-hot-toast';
 
 const ResultsList = () => {
     const [elections, setElections] = useState([]);
@@ -40,6 +41,7 @@ const ResultsList = () => {
         try {
             const data = await voterService.getElectionsWithResults();
             console.log(data)
+            toast.success('Elections loaded successfully');
             await Promise.all(data.map(async (election) => {
                 console.log(election);
                 const { data: { data: d } } = await api.get(`/votes/count/${election.election_id}`);

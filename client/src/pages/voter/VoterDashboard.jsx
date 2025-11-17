@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Calendar, Vote, CheckCircle, Clock, TrendingUp, Users, BarChart } from 'lucide-react';
 import voterService from '../../services/voterService';
 import { useAuth } from '../../auth/AuthContext';
+import toast from 'react-hot-toast';
 
 const VoterDashboard = () => {
   const { user } = useAuth();
@@ -26,7 +27,7 @@ const VoterDashboard = () => {
         voterService.getVoterStats(),
         voterService.getAvailableElections()
       ]);
-
+      toast.success('Dashboard data loaded successfully');
       setStats(statsData);
       setRecentElections(electionsData.slice(0, 3)); // Show 5 most recent
     } catch (error) {

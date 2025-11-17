@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import toast, { ToastIcon } from 'react-hot-toast';
 
 const VoterProfile = () => {
   const { user, login } = useAuth();
@@ -56,6 +57,7 @@ const VoterProfile = () => {
         username: userData.username || '',
         avatar_url: userData.avatar_url || '',
       };
+      toast.success('Profile loaded successfully');
       setProfile(profileData);
       setOriginalProfile(profileData);
     } catch (err) {
@@ -73,7 +75,7 @@ const VoterProfile = () => {
     setSaving(true);
     setError('');
     setMessage('');
-
+    toast.success('Saving profile...');
     try {
       const { data } = await voterService.updateProfile(profile);
       const updatedUser = { ...user, name: data.user.name };
@@ -92,6 +94,7 @@ const VoterProfile = () => {
 
   const handleCancel = () => {
     setProfile(originalProfile);
+    toast.success('Edits canceled');
     setIsEditing(false);
     setError('');
     setMessage('');

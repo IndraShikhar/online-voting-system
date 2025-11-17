@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Calendar, Users, Vote, CheckCircle, Clock, Filter } from 'lucide-react';
 import voterService from '../../services/voterService';
+import toast from 'react-hot-toast';
 
 const ElectionList = () => {
   const [elections, setElections] = useState([]);
@@ -24,7 +25,7 @@ const ElectionList = () => {
     try {
       const data = await voterService.getAvailableElections();
       setElections(data);
-
+      toast.success('Elections loaded successfully');
       // Check voting status for each election
       const statusPromises = data.map(async (election) => {
         try {
